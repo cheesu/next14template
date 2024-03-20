@@ -13,9 +13,9 @@ export default function SubMainLayout({
 }>) {
   return (
     <>
-      <div>서브메인 헤더</div>
+      <div>서브메인 헤더1</div>
       {children}
-      <div>서브메인 푸터</div>
+      <div>서브메인 푸터1</div>
     </>
   );
 }
