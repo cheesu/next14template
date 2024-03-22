@@ -6,6 +6,16 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --header-position: sticky;
+  --content-offset: 0px;
+  --header-height: 64px;
+  --header-mb: 0px;
+  --avatar-image-transform: translate3d(0rem, 0, 0) scale(1);
+  --avatar-border-transform: translate3d(-0.2222222222222222rem, 0, 0)
+    scale(1.7777777777777777);
+  --avatar-border-opacity: 0;
+  --header-top: 0px;
+  --avatar-top: 0px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,12 +28,6 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
