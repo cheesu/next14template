@@ -8,7 +8,7 @@ import Main from "@/components/layout/Main";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Next App",
+  title: "Next TEST App",
   description: "test next app",
 };
 
