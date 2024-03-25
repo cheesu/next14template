@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image"; // Next.js 프로젝트에서 이미지를 다룰 때 사용합니다.
 import Menu from "./Menu";
+import LoginButton from "../login/LoginButton";
 
 const Header = () => {
   return (
@@ -81,13 +82,7 @@ const Header = () => {
                   </div>
                   <div className="flex justify-end md:flex-1">
                     <div className="pointer-events-auto">
-                      <button
-                        type="button"
-                        aria-label="Switch to dark theme"
-                        className="group rounded-full bg-white/90 px-3 py-2 shadow-lg shadow-zinc-800/5 ring-1 ring-zinc-900/5 backdrop-blur transition dark:bg-zinc-800/90 dark:ring-white/10 dark:hover:ring-white/20"
-                      >
-                        login
-                      </button>
+                      <LoginButton />
                     </div>
                   </div>
                 </div>
@@ -96,7 +91,6 @@ const Header = () => {
           </div>
         </div>
       </div>
-      {/* 너무 길어지므로 이후 부분은 생략합니다. 필요한 부분을 추가해 주세요. */}
     </header>
   );
 };
