@@ -23,9 +23,14 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
       <div
         className="absolute inset-0 bg-black opacity-50"
         onClick={onClose}
+        data-testid="modal-background"
       ></div>
       <div className="bg-white p-6 rounded shadow-lg z-10">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4"
+          data-testid="login-form"
+        >
           <label
             htmlFor="username"
             className="block text-sm font-medium text-gray-700"
