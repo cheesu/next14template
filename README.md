@@ -21,6 +21,12 @@ Jest는 기본적으로 Babel을 사용하여 JavaScript 코드를 변환합니�
 npm install --save-dev @babel/preset-react @babel/preset-typescript
 npm install --save-dev @babel/preset-env
 
+update 2024.03.26
+-> next14 swc 이슈로 인해 바벨 제거
+
+babel대신 swc 사용
+npm install --save-dev jest @swc/core @swc/jest
+
 ### 관련 파일
 
 jest.config.ts
