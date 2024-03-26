@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useLoginMutation } from "@/features/api/auth";
 
 type LoginFormInputs = {
   username: string;
@@ -13,10 +14,21 @@ interface LoginModalProps {
 const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
   const { register, handleSubmit } = useForm<LoginFormInputs>();
 
+  const [login, { data: loginResult, error, isLoading }] = useLoginMutation();
+
   const onSubmit = (data: LoginFormInputs) => {
     // Handle login logic here
+    login(data);
     console.log(data);
   };
+
+  useEffect(() => {
+    if (error) {
+      console.log(error);
+    } else if (loginResult) {
+      console.log("loginResult", loginResult);
+    }
+  }, [loginResult, error]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
