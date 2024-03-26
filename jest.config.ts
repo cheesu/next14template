@@ -14,7 +14,7 @@ module.exports = {
 
   // TypeScript 파일(.ts, .tsx)을 처리하기 위해 ts-jest를 사용하는 변환 설정입니다.
   transform: {
-    "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
+    "^.+\\.(js|jsx|ts|tsx)$": "@swc/jest",
   },
 
   // 테스트 파일을 식별하기 위한 정규 표현식 패턴입니다.
