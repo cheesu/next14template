@@ -27,6 +27,12 @@ update 2024.03.26
 babel대신 swc 사용
 npm install --save-dev jest @swc/core @swc/jest
 
+테스트 store를 위한 redux-mock-store 패키지
+npm install redux-mock-store --save-dev
+
+모킹을 위한 msw패키지
+npm install msw --save-dev
+
 ### 관련 파일
 
 jest.config.ts

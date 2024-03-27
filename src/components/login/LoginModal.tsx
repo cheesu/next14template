@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useLoginMutation } from "@/features/api/auth";
-
 type LoginFormInputs = {
   username: string;
   password: string;
@@ -19,12 +18,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
   const onSubmit = (data: LoginFormInputs) => {
     // Handle login logic here
     login(data);
-    console.log(data);
+    console.log("sendData", data);
   };
 
   useEffect(() => {
     if (error) {
-      console.log(error);
+      console.log("error 발생 내용", error);
     } else if (loginResult) {
       console.log("loginResult", loginResult);
     }

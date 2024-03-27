@@ -4,6 +4,7 @@ module.exports = {
 
   // 테스트 환경으로 jest-environment-jsdom 사용하여 브라우저 환경을 모의합니다.
   testEnvironment: "jest-environment-jsdom",
+  //testEnvironment: "jsdom",
 
   // Jest가 테스트를 검색할 시작점으로 src 디렉토리를 지정합니다.
   roots: ["<rootDir>/src"],
@@ -37,4 +38,17 @@ module.exports = {
   // 생성할 커버리지 리포트의 형식을 지정합니다.
   // lcov은 HTML 형식의 리포트를 생성하고, text-summary는 터미널에 요약 정보를 출력합니다.
   coverageReporters: ["lcov", "text-summary"],
+
+  // Cannot find module 'msw/node' 에러를 해결하기 위한 설정입니다.
+  /*JSDOM이 내보내기 조건을 강제하기 때문입니다 browser. 즉, JSDOM은 
+  "타사 패키지가 browser필드를 내보내는 경우 해당 필드를 사용하십시오"라고 말합니다. 
+  그것이 기본값이고 다소 위험한 기본값입니다. 왜? JSDOM은 여전히 ​​Node.js에서 실행되기 때문입니다 . 
+  게다가 JSDOM은 설계상 100% 브라우저 호환성을 가질 수 없으므로 browser내보내기 조건을 강제하면 
+  MSW와 같이 다양한 환경에 대해 다양한 코드를 제공하는 패키지로 작업할 때 테스트가 
+  필요 이상으로 실패하게 됩니다. */
+  testEnvironmentOptions: {
+    customExportConditions: [""],
+  },
+
+  setupFiles: ["./jest.polyfills.js"],
 };

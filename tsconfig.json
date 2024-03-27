@@ -21,6 +21,16 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "babel.config.js",
+    "src/mock/server.js",
+    "src/setupTests.js",
+    "src/mock/handlers.js",
+    "src/mock/browser.js"
+  ],
   "exclude": ["node_modules"]
 }
