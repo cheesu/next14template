@@ -1,6 +1,5 @@
 import React from "react";
 import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 import { render, fireEvent, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import LoginModal from "./LoginModal";
@@ -32,6 +31,21 @@ describe("LoginModal", () => {
   });
 
   it("submits the form with the entered values", async () => {
+    // msw를 사용하여 '/login' API 요청을 가로챕니다.
+    mockServer.use(
+      http.post("http://localhost:8081/auth/login", (info) => {
+        console.log("요청값", info);
+        return new Response(
+          JSON.stringify({ access_token: "abc-123", refresh_token: "123" }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      })
+    );
+
     const onClose = jest.fn();
     render(
       <Provider store={store}>
@@ -45,21 +59,6 @@ describe("LoginModal", () => {
     fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "testpass" },
     });
-
-    // msw를 사용하여 '/login' API 요청을 가로챕니다.
-    mockServer.use(
-      http.post("/auth/login", (info) => {
-        console.log("요청값", info);
-        return new Response(
-          JSON.stringify({ access_token: "abc-123", refresh_token: "123" }),
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      })
-    );
 
     await act(async () => {
       fireEvent.submit(screen.getByTestId("login-form"));

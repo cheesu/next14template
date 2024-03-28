@@ -33,6 +33,9 @@ npm install redux-mock-store --save-dev
 모킹을 위한 msw패키지
 npm install msw --save-dev
 
+테스트 환경에서 TransformStream에 대한 폴리필(polyfill)이 필요
+npm install web-streams-polyfill --save-dev
+
 ### 관련 파일
 
 jest.config.ts
