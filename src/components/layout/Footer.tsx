@@ -5,32 +5,47 @@ import { MENU_LIST } from "@/const/const";
 
 const Footer = () => {
   return (
-    <footer className="mt-32 flex-none">
-      <div className="sm:px-8">
-        <div className="mx-auto w-full max-w-7xl lg:px-8">
-          <div className="border-t border-zinc-100 pb-16 pt-10 dark:border-zinc-700/40">
-            <div className="relative px-4 sm:px-8 lg:px-12">
-              <div className="mx-auto max-w-2xl lg:max-w-5xl">
-                <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-                  <div className="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                    {MENU_LIST?.map((item: MenuItem) => {
-                      return (
-                        <a
-                          key={item.id}
-                          className="transition hover:text-teal-500 dark:hover:text-teal-400"
-                          href={item.url}
-                        >
-                          {item.title}
-                        </a>
-                      );
-                    })}
-                  </div>
-                  <p className="text-sm text-zinc-400 dark:text-zinc-500">
-                    ©2024 In-studio. All rights reserved.
-                  </p>
-                </div>
-              </div>
+    <footer className="mt-auto border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+      <div className="mx-auto max-w-[95%] px-6 py-4">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+          {/* Quick Links */}
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs">
+            {MENU_LIST?.slice(0, 4).map((item: MenuItem) => {
+              // 1뎁스 메뉴만 표시 (url이 있는 경우)
+              if (item.url) {
+                return (
+                  <a
+                    key={item.id}
+                    className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors duration-200 px-2 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                    href={item.url}
+                  >
+                    {item.title}
+                  </a>
+                );
+              }
+              // 2뎁스 메뉴가 있는 경우 첫 번째 하위 메뉴만 표시
+              return item.children?.slice(0, 1).map((child) => (
+                <a
+                  key={child.id}
+                  className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors duration-200 px-2 py-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+                  href={child.url || "#"}
+                >
+                  {child.title}
+                </a>
+              ));
+            })}
+          </div>
+          
+          {/* Copyright and Status */}
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-gray-500 dark:text-gray-400">시스템 정상</span>
             </div>
+            <div className="h-4 w-px bg-gray-300 dark:bg-gray-600"></div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              ©2024 의료영상분석시스템. All rights reserved.
+            </p>
           </div>
         </div>
       </div>
