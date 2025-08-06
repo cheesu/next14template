@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js 회전과 이동 데모</title>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        #controls { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 15px; border-radius: 8px; }
+        button { margin: 5px; padding: 8px 12px; cursor: pointer; }
+        .info { font-size: 12px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <h3>🎮 3D 회전과 이동 테스트</h3>
+        
+        <div>
+            <strong>회전 (Rotation):</strong><br>
+            <button onclick="rotateX()">X축 회전 (끄덕)</button>
+            <button onclick="rotateY()">Y축 회전 (도리)</button>
+            <button onclick="rotateZ()">Z축 회전 (기울)</button>
+        </div>
+        
+        <div>
+            <strong>이동 (Position):</strong><br>
+            <button onclick="moveLeft()">← 왼쪽</button>
+            <button onclick="moveRight()">오른쪽 →</button><br>
+            <button onclick="moveUp()">↑ 위쪽</button>
+            <button onclick="moveDown()">아래쪽 ↓</button><br>
+            <button onclick="moveForward()">앞쪽 ↗</button>
+            <button onclick="moveBackward()">뒤쪽 ↙</button>
+        </div>
+        
+        <div>
+            <button onclick="resetPosition()">🔄 위치 리셋</button>
+            <button onclick="toggleAnimation()">⏯️ 자동 회전</button>
+        </div>
+        
+        <div class="info">
+            <div>위치: <span id="position">0, 0, 0</span></div>
+            <div>회전: <span id="rotation">0, 0, 0</span></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // 기본 설정
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x001122);
+        document.body.appendChild(renderer.domElement);
+
+        // 조명
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 10, 5);
+        scene.add(directionalLight);
+
+        // 메인 큐브 (빨간색)
+        const cubeGeometry = new THREE.BoxGeometry(2, 2, 2);
+        const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xff4444 });
+        const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        scene.add(cube);
+
+        // 축 표시 (XYZ축)
+        const axesHelper = new THREE.AxesHelper(5);
+        scene.add(axesHelper);
+
+        // 격자 바닥
+        const gridHelper = new THREE.GridHelper(20, 20, 0x444444, 0x444444);
+        scene.add(gridHelper);
+
+        // 참조 큐브들 (각 축 끝에 작은 큐브)
+        const refGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+        
+        // X축 참조 (빨간색)
+        const xRefCube = new THREE.Mesh(refGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+        xRefCube.position.set(3, 0, 0);
+        scene.add(xRefCube);
+
+        // Y축 참조 (초록색)  
+        const yRefCube = new THREE.Mesh(refGeometry, new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+        yRefCube.position.set(0, 3, 0);
+        scene.add(yRefCube);
+
+        // Z축 참조 (파란색)
+        const zRefCube = new THREE.Mesh(refGeometry, new THREE.MeshBasicMaterial({ color: 0x0000ff }));
+        zRefCube.position.set(0, 0, 3);
+        scene.add(zRefCube);
+
+        // 카메라 위치
+        camera.position.set(8, 8, 8);
+        camera.lookAt(0, 0, 0);
+
+        // 애니메이션 변수
+        let autoRotate = false;
+
+        // 회전 함수들
+        function rotateX() {
+            cube.rotation.x += Math.PI / 6; // 30도씩 회전
+            updateDisplay();
+        }
+
+        function rotateY() {
+            cube.rotation.y += Math.PI / 6;
+            updateDisplay();
+        }
+
+        function rotateZ() {
+            cube.rotation.z += Math.PI / 6;
+            updateDisplay();
+        }
+
+        // 이동 함수들
+        function moveLeft() {
+            cube.position.x -= 1;
+            updateDisplay();
+        }
+
+        function moveRight() {
+            cube.position.x += 1;
+            updateDisplay();
+        }
+
+        function moveUp() {
+            cube.position.y += 1;  // 위로 이동!
+            updateDisplay();
+        }
+
+        function moveDown() {
+            cube.position.y -= 1;  // 아래로 이동!
+            updateDisplay();
+        }
+
+        function moveForward() {
+            cube.position.z += 1;  // 앞으로 이동
+            updateDisplay();
+        }
+
+        function moveBackward() {
+            cube.position.z -= 1;  // 뒤로 이동
+            updateDisplay();
+        }
+
+        function resetPosition() {
+            cube.position.set(0, 0, 0);
+            cube.rotation.set(0, 0, 0);
+            updateDisplay();
+        }
+
+        function toggleAnimation() {
+            autoRotate = !autoRotate;
+        }
+
+        // 위치와 회전 정보 업데이트
+        function updateDisplay() {
+            const pos = cube.position;
+            const rot = cube.rotation;
+            document.getElementById('position').textContent = 
+                `${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)}`;
+            document.getElementById('rotation').textContent = 
+                `${(rot.x * 180/Math.PI).toFixed(0)}°, ${(rot.y * 180/Math.PI).toFixed(0)}°, ${(rot.z * 180/Math.PI).toFixed(0)}°`;
+        }
+
+        // 애니메이션 루프
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 자동 회전
+            if (autoRotate) {
+                cube.rotation.x += 0.005;
+                cube.rotation.y += 0.01;
+                cube.rotation.z += 0.003;
+                updateDisplay();
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // 창 크기 변경 대응
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // 시작
+        updateDisplay();
+        animate();
+    </script>
+</body>
+</html> 
