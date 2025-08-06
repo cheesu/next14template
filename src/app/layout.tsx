@@ -5,6 +5,7 @@ import "@/app/globals.scss";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Main from "@/components/layout/Main";
+import Breadcrumb from "@/components/layout/Breadcrumb";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,20 +21,25 @@ type LayoutProps = {
 export default function RootLayout({ children }: LayoutProps) {
   return (
     <ReduxProvider>
-      <html lang="en">
-        <body className={inter.className + " flex h-full bg-zinc-50 "}>
-          <div className="flex w-full">
-            <div className="fixed inset-0 flex justify-center sm:px-8">
-              <div className="flex w-full max-w-7xl lg:px-8">
-                <div className="w-full bg-white ring-1 ring-zinc-100  ring-zinc-300/20"></div>
+      <html lang="ko">
+        <body className={inter.className + " min-h-screen bg-white dark:bg-slate-900"}>
+          {/* Main content area */}
+          <div className="flex min-h-screen flex-col">
+            {/* Top Header with Navigation */}
+            <Header />
+            
+            {/* Main content */}
+            <main className="flex-1 p-6">
+              <div className="mx-auto max-w-[95%]">
+                <Breadcrumb />
+                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-8 min-h-[calc(100vh-10rem)]">
+                  {children}
+                </div>
               </div>
-            </div>
-
-            <div className="relative flex w-full flex-col">
-              <Header />
-              <Main>{children}</Main>
-              <Footer />
-            </div>
+            </main>
+            
+            {/* Footer */}
+            <Footer />
           </div>
         </body>
       </html>
