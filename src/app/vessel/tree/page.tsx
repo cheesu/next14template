@@ -140,15 +140,15 @@ const VesselTreePage: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="bg-white rounded-xl p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">🌳 혈관 트리 시각화</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">🩸 혈관 모형도</h1>
         <p className="text-lg text-gray-600 mb-8">
-          혈관의 구조와 절단 위치를 시각적으로 표현하고 분석할 수 있습니다.
+          혈관의 구조와 절단 위치를 시각적으로 표현하고 분석할 수 있는 모형도입니다.
         </p>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* 시각화 영역 */}
           <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">혈관 트리 시각화</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">혈관 모형도 시각화</h2>
             <div className="flex justify-center bg-gray-50 rounded-lg p-4">
               <canvas
                 ref={canvasRef}
