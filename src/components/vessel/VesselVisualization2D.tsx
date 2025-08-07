@@ -125,13 +125,25 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
     const minB = Math.min(...proj.map(p => p.b));
     const maxB = Math.max(...proj.map(p => p.b));
 
-    const scaleX = (w - padding * 2) / (maxA - minA || 1);
-    const scaleY = (h - padding * 2) / (maxB - minB || 1);
+    // 데이터 범위 계산
+    const dataRangeX = maxA - minA || 1;
+    const dataRangeY = maxB - minB || 1;
+
+    // 각 축별 스케일 계산
+    const scaleX = (w - padding * 2) / dataRangeX;
+    const scaleY = (h - padding * 2) / dataRangeY;
+
+    // 통일된 스케일 사용 - 종횡비 보정을 위해 작은 값 선택
+    const uniformScale = Math.min(scaleX, scaleY);
+
+    // 중앙 정렬을 위한 오프셋 계산
+    const offsetX = (w - dataRangeX * uniformScale) / 2;
+    const offsetY = (h - dataRangeY * uniformScale) / 2;
 
     points.forEach((p, i) => {
       const { a, b } = proj[i];
-      p[`screenX_${view}`] = (a - minA) * scaleX + padding;
-      p[`screenY_${view}`] = h - ((b - minB) * scaleY + padding);
+      p[`screenX_${view}`] = (a - minA) * uniformScale + offsetX;
+      p[`screenY_${view}`] = h - ((b - minB) * uniformScale + offsetY);
     });
   };
 
@@ -200,7 +212,7 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
         ctx.fillText(text, x + 6, y - 6);
       }
     });
-  }, [points, hoveredPoint, selectedPoints, diameterCheck, flipBackground, bgImages, canvases, compact]);
+  }, [points, hoveredPoint, selectedPoints, diameterCheck, flipBackground, bgImages, canvases, compact, computeScreenCoords]);
 
   const drawAll = useCallback(() => {
     ['XY', 'XZ', 'YZ'].forEach(drawView);

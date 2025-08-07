@@ -34,10 +34,47 @@ const VesselVisualizationPage: React.FC = () => {
     XZ: null,
     YZ: null,
   });
+  const [canvasSizes, setCanvasSizes] = useState<{[key: string]: {width: number, height: number}}>({
+    XY: { width: 300, height: 300 },
+    XZ: { width: 600, height: 600 },
+    YZ: { width: 300, height: 300 },
+  });
 
   const uniformRadius = 2;
-  const canvasSize = 300; // 작은 캔버스 크기
-  const mainCanvasSize = 600; // XZ View 메인 캔버스 크기
+  
+  // ITK-SNAP 정보 기반 voxel 크기 (231 × 118 × 209)
+  const voxelDimensions = {
+    XY: { width: 231, height: 118 }, // mip_axial: x,y
+    XZ: { width: 231, height: 209 }, // mip_cor: x,z  
+    YZ: { width: 118, height: 209 }  // mip_sagittal: y,z
+  };
+  
+  // 이미지 크기에 맞춰 캔버스 크기 계산
+  const getCanvasSizeForView = (view: string, bgImage: HTMLImageElement | null) => {
+    if (bgImage) {
+      const maxSize = view === 'XZ' ? 600 : 400; // XZ는 메인 뷰이므로 더 크게
+      const aspectRatio = bgImage.width / bgImage.height;
+      
+      if (aspectRatio > 1) {
+        // 가로가 더 긴 경우
+        return { width: maxSize, height: Math.round(maxSize / aspectRatio) };
+      } else {
+        // 세로가 더 긴 경우  
+        return { width: Math.round(maxSize * aspectRatio), height: maxSize };
+      }
+    }
+    
+    // 기본값: voxel 비율 사용
+    const voxel = voxelDimensions[view as keyof typeof voxelDimensions];
+    const maxSize = view === 'XZ' ? 600 : 300;
+    const aspectRatio = voxel.width / voxel.height;
+    
+    if (aspectRatio > 1) {
+      return { width: maxSize, height: Math.round(maxSize / aspectRatio) };
+    } else {
+      return { width: Math.round(maxSize * aspectRatio), height: maxSize };
+    }
+  };
 
   const canvases = {
     XY: canvasXYRef.current,
@@ -63,18 +100,49 @@ const VesselVisualizationPage: React.FC = () => {
     const h = canvas.height;
 
     const proj = points.map(p => getProjection(p, view));
-    const minA = Math.min(...proj.map(p => p.a));
-    const maxA = Math.max(...proj.map(p => p.a));
-    const minB = Math.min(...proj.map(p => p.b));
-    const maxB = Math.max(...proj.map(p => p.b));
-
-    const scaleX = (w - padding * 2) / (maxA - minA || 1);
-    const scaleY = (h - padding * 2) / (maxB - minB || 1);
+    
+    // ITK-SNAP의 전체 voxel 공간 사용 (중요!)
+    const voxel = voxelDimensions[view as keyof typeof voxelDimensions];
+    const bgImage = bgImages[view];
+    
+    // 전체 voxel 공간의 크기 (0부터 최대값까지)
+    const fullVoxelWidth = voxel.width;   // 231, 231, 118
+    const fullVoxelHeight = voxel.height; // 118, 209, 209
+    
+    // 실제 이미지가 있으면 그 크기 기준, 없으면 voxel 크기 기준
+    let targetWidth, targetHeight;
+    if (bgImage) {
+      targetWidth = bgImage.width;
+      targetHeight = bgImage.height;
+    } else {
+      targetWidth = fullVoxelWidth;
+      targetHeight = fullVoxelHeight;
+    }
+    
+    // 캔버스 크기에 맞춰 스케일 계산 (전체 voxel 공간 기준)
+    const scaleX = (w - padding * 2) / targetWidth;
+    const scaleY = (h - padding * 2) / targetHeight;
+    
+    // 종횡비 보정을 위해 통일된 스케일 사용
+    const uniformScale = Math.min(scaleX, scaleY);
+    
+    // 중앙 정렬을 위한 오프셋 계산
+    const scaledWidth = targetWidth * uniformScale;
+    const scaledHeight = targetHeight * uniformScale;
+    const offsetX = (w - scaledWidth) / 2;
+    const offsetY = (h - scaledHeight) / 2;
 
     points.forEach((p, i) => {
       const { a, b } = proj[i];
-      p[`screenX_${view}`] = (a - minA) * scaleX + padding;
-      p[`screenY_${view}`] = h - ((b - minB) * scaleY + padding);
+      
+      // voxel 좌표를 이미지 픽셀 좌표로 변환
+      const imageX = (a / fullVoxelWidth) * targetWidth;
+      const imageY = (b / fullVoxelHeight) * targetHeight;
+      
+      // 캔버스 좌표로 최종 변환
+      p[`screenX_${view}`] = imageX * uniformScale + offsetX;
+      // PNG는 우하단이 원점이므로 Y축 방향 보정
+      p[`screenY_${view}`] = h - (imageY * uniformScale + offsetY);
     });
   };
 
@@ -180,6 +248,9 @@ const VesselVisualizationPage: React.FC = () => {
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
+        // 이미지 로드 후 캔버스 크기 업데이트
+        const newSize = getCanvasSizeForView(view, img);
+        setCanvasSizes(prev => ({ ...prev, [view]: newSize }));
         setBgImages(prev => ({ ...prev, [view]: img }));
       };
       img.src = e.target?.result as string;
@@ -248,7 +319,7 @@ const VesselVisualizationPage: React.FC = () => {
 
   useEffect(() => {
     drawAll();
-  }, [drawAll]);
+  }, [drawAll, canvasSizes]);
 
   const selectedList = clickedSet.size === 0 
     ? "선택된 점: 없음" 
@@ -324,12 +395,13 @@ const VesselVisualizationPage: React.FC = () => {
               </p>
               <canvas
                 ref={canvasXZRef}
-                width={mainCanvasSize}
-                height={mainCanvasSize}
+                width={canvasSizes.XZ.width}
+                height={canvasSizes.XZ.height}
                 onMouseMove={handleCanvasMouseMove('XZ')}
                 onMouseLeave={handleCanvasMouseLeave}
                 onClick={handleCanvasClick('XZ')}
                 className="border-2 border-blue-400 rounded-lg cursor-crosshair shadow-lg"
+                style={{ width: `${canvasSizes.XZ.width}px`, height: `${canvasSizes.XZ.height}px` }}
               />
               <div className="mt-4">
                 <input
@@ -350,12 +422,13 @@ const VesselVisualizationPage: React.FC = () => {
               </p>
               <canvas
                 ref={canvasXYRef}
-                width={canvasSize}
-                height={canvasSize}
+                width={canvasSizes.XY.width}
+                height={canvasSizes.XY.height}
                 onMouseMove={handleCanvasMouseMove('XY')}
                 onMouseLeave={handleCanvasMouseLeave}
                 onClick={handleCanvasClick('XY')}
                 className="border border-gray-300 rounded-lg cursor-crosshair shadow-sm"
+                style={{ width: `${canvasSizes.XY.width}px`, height: `${canvasSizes.XY.height}px` }}
               />
               <div className="mt-3">
                 <input
@@ -373,12 +446,13 @@ const VesselVisualizationPage: React.FC = () => {
               </p>
               <canvas
                 ref={canvasYZRef}
-                width={canvasSize}
-                height={canvasSize}
+                width={canvasSizes.YZ.width}
+                height={canvasSizes.YZ.height}
                 onMouseMove={handleCanvasMouseMove('YZ')}
                 onMouseLeave={handleCanvasMouseLeave}
                 onClick={handleCanvasClick('YZ')}
                 className="border border-gray-300 rounded-lg cursor-crosshair shadow-sm"
+                style={{ width: `${canvasSizes.YZ.width}px`, height: `${canvasSizes.YZ.height}px` }}
               />
               <div className="mt-3">
                 <input
