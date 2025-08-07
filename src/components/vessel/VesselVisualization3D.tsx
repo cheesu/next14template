@@ -18,18 +18,12 @@ interface VesselSphereProps {
   point: VesselPoint;
   isSelected: boolean;
   isHovered: boolean;
-  onClick: () => void;
-  onPointerOver: () => void;
-  onPointerOut: () => void;
 }
 
 const VesselSphere: React.FC<VesselSphereProps> = ({
   point,
   isSelected,
   isHovered,
-  onClick,
-  onPointerOver,
-  onPointerOut,
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   
@@ -40,7 +34,7 @@ const VesselSphere: React.FC<VesselSphereProps> = ({
     }
   });
 
-  const color = isSelected ? "#0066ff" : isHovered ? "#ff6600" : "#ff0000";
+  const color = isSelected ? "#0066ff" : isHovered ? "#0066ff" : "#ff0000";
   const scale = isSelected || isHovered ? 1.5 : 1;
 
   return (
@@ -49,9 +43,7 @@ const VesselSphere: React.FC<VesselSphereProps> = ({
         ref={meshRef}
         position={point.position}
         args={[point.radius * scale, 16, 16]}
-        onClick={onClick}
-        onPointerOver={onPointerOver}
-        onPointerOut={onPointerOut}
+        userData={{ vesselPointIdx: point.idx }}
       >
         <meshStandardMaterial color={color} />
       </Sphere>
@@ -148,7 +140,64 @@ const Scene: React.FC<{
   onPointHover: (idx: number | null) => void;
   coordinateSystem: string;
 }> = ({ points, selectedPoints, hoveredPoint, onPointClick, onPointHover, coordinateSystem }) => {
-  const { camera } = useThree();
+  const { camera, raycaster, mouse, scene, gl } = useThree();
+  const groupRef = useRef<THREE.Group>(null);
+
+  // 마우스 이벤트 처리
+  const handlePointerMove = React.useCallback((event: any) => {
+    const rect = gl.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    
+    if (groupRef.current) {
+      const intersects = raycaster.intersectObjects(groupRef.current.children, true);
+      
+      if (intersects.length > 0) {
+        // 가장 가까운(첫 번째) 교차점만 선택
+        const closestIntersect = intersects[0];
+        const userData = closestIntersect.object.userData;
+        if (userData && userData.vesselPointIdx !== undefined) {
+          onPointHover(userData.vesselPointIdx);
+        }
+      } else {
+        onPointHover(null);
+      }
+    }
+  }, [camera, raycaster, mouse, onPointHover, gl.domElement]);
+
+  const handlePointerClick = React.useCallback((event: any) => {
+    const rect = gl.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    
+    if (groupRef.current) {
+      const intersects = raycaster.intersectObjects(groupRef.current.children, true);
+      
+      if (intersects.length > 0) {
+        // 가장 가까운(첫 번째) 교차점만 선택
+        const closestIntersect = intersects[0];
+        const userData = closestIntersect.object.userData;
+        if (userData && userData.vesselPointIdx !== undefined) {
+          onPointClick(userData.vesselPointIdx);
+        }
+      }
+    }
+  }, [camera, raycaster, mouse, onPointClick, gl.domElement]);
+
+  React.useEffect(() => {
+    const canvas = gl.domElement;
+    canvas.addEventListener('pointermove', handlePointerMove);
+    canvas.addEventListener('click', handlePointerClick);
+    
+    return () => {
+      canvas.removeEventListener('pointermove', handlePointerMove);
+      canvas.removeEventListener('click', handlePointerClick);
+    };
+  }, [handlePointerMove, handlePointerClick, gl.domElement]);
 
   // 자동으로 카메라 위치를 혈관 데이터에 맞게 조정
   React.useEffect(() => {
@@ -181,17 +230,16 @@ const Scene: React.FC<{
       <pointLight position={[-10, -10, -5]} intensity={0.5} />
 
       {/* 혈관 점들 */}
-      {points.map((point) => (
-        <VesselSphere
-          key={point.idx}
-          point={point}
-          isSelected={selectedPoints.has(point.idx)}
-          isHovered={hoveredPoint === point.idx}
-          onClick={() => onPointClick(point.idx)}
-          onPointerOver={() => onPointHover(point.idx)}
-          onPointerOut={() => onPointHover(null)}
-        />
-      ))}
+      <group ref={groupRef}>
+        {points.map((point) => (
+          <VesselSphere
+            key={point.idx}
+            point={point}
+            isSelected={selectedPoints.has(point.idx)}
+            isHovered={hoveredPoint === point.idx}
+          />
+        ))}
+      </group>
 
       {/* 좌표계 헬퍼 (더 크게) */}
       <axesHelper args={[30]} />
