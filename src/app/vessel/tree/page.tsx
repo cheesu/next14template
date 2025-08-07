@@ -60,10 +60,26 @@ const VesselTreePage: React.FC = () => {
         ctx.fill();
         ctx.restore();
 
-        // 절단 번호
-        ctx.fillStyle = "black";
-        ctx.font = "14px Arial";
-        ctx.fillText((idx + 1).toString(), cutX + 5, cutY - 5);
+        // 절단 번호 (배경이 있는 텍스트로 가독성 향상)
+        const text = (idx + 1).toString();
+        const textX = cutX + 5;
+        const textY = cutY - 5;
+        
+        // 흰색 배경 원형
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(textX + 8, textY - 4, 12, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        
+        // 검은색 텍스트
+        ctx.fillStyle = "#333";
+        ctx.font = "bold 12px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(text, textX + 8, textY + 1);
+        ctx.textAlign = "start"; // 기본값으로 복구
       });
     }
 
@@ -169,7 +185,7 @@ const VesselTreePage: React.FC = () => {
                   <span>절단 위치</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-black text-white text-xs flex items-center justify-center rounded">1</div>
+                  <div className="w-6 h-6 bg-white border border-gray-600 text-gray-800 text-xs flex items-center justify-center rounded-full font-bold">1</div>
                   <span>절단 번호</span>
                 </div>
               </div>
@@ -184,13 +200,17 @@ const VesselTreePage: React.FC = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 혈관 데이터 (JSON)
+                <span className="text-blue-600 text-xs ml-2">* 기본 예시 데이터가 입력되어 있습니다</span>
               </label>
               <textarea
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
-                className="w-full h-64 p-3 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full h-64 p-3 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50 text-gray-900"
                 placeholder="혈관 데이터를 JSON 형태로 입력하세요..."
               />
+              <p className="text-xs text-gray-500 mt-2">
+                💡 위 입력창에 기본 예시 데이터가 표시되어 있습니다. 이 형태를 참고해서 자유롭게 수정하세요!
+              </p>
             </div>
 
             {/* 에러 표시 */}
