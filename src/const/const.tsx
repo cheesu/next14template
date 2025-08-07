@@ -31,6 +31,7 @@ export const MENU_LIST = [
       { title: "혈관 분석", url: "/vessel/analysis", id: 51 },
       { title: "혈관 통합", url: "/vessel/integrated", id: 52 },
       { title: "혈관 시각화", url: "/vessel/visualization", id: 53 },
+      { title: "혈관 트리", url: "/vessel/tree", id: 54 },
     ]
   },
   { 
