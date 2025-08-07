@@ -120,20 +120,72 @@ const DicomReader: React.FC = () => {
   };
 
   return (
-    <div>
-      <input type="file" onChange={handleFileChange} />
-      <pre>{dicomData}</pre>
-      <div>
-        <strong>Patient Name:</strong> {patientInfo.name}
+    <div className="space-y-8">
+      <div className="bg-white rounded-xl p-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">🔍 DICOM 파일 분석기</h1>
+        <p className="text-lg text-gray-600 mb-8">
+          DICOM 파일을 업로드하여 메타데이터를 분석하고 이미지를 확인할 수 있습니다.
+        </p>
+        
+        {/* 파일 업로드 섹션 */}
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">파일 업로드</h2>
+          <input 
+            type="file" 
+            onChange={handleFileChange}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            accept=".dcm,.dicom"
+          />
+        </div>
+
+        {/* 환자 정보 섹션 */}
+        {(patientInfo.name || patientInfo.id || patientInfo.test) && (
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">환자 정보</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-sm font-medium text-gray-500">환자명</p>
+                <p className="text-lg font-semibold text-gray-900">{patientInfo.name || '-'}</p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-sm font-medium text-gray-500">환자 ID</p>
+                <p className="text-lg font-semibold text-gray-900">{patientInfo.id || '-'}</p>
+              </div>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <p className="text-sm font-medium text-gray-500">제조사</p>
+                <p className="text-lg font-semibold text-gray-900">{patientInfo.test || '-'}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 이미지 뷰어 섹션 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">이미지 뷰 1</h3>
+            <div className="flex justify-center bg-gray-50 rounded-lg p-4">
+              <canvas id="myCanvas" width="400" height="400" className="border border-gray-300 rounded"></canvas>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">이미지 뷰 2</h3>
+            <div className="flex justify-center bg-gray-50 rounded-lg p-4">
+              <canvas id="myCanvas2" width="400" height="400" className="border border-gray-300 rounded"></canvas>
+            </div>
+          </div>
+        </div>
+
+        {/* DICOM 메타데이터 섹션 */}
+        {dicomData && (
+          <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">DICOM 메타데이터</h3>
+            <div className="bg-gray-50 rounded-lg p-4 max-h-64 overflow-y-auto">
+              <pre className="text-xs text-gray-700">{dicomData}</pre>
+            </div>
+          </div>
+        )}
       </div>
-      <div>
-        <strong>Patient ID:</strong> {patientInfo.id}
-      </div>
-      <div>
-        <strong>test:</strong> {patientInfo.test}
-      </div>
-      <div><canvas id="myCanvas" width="880" height="880"></canvas></div>
-    <div><canvas id="myCanvas2" width="880" height="880"></canvas></div>
     </div>
   );
 };

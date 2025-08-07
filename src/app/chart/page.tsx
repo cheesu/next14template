@@ -51,17 +51,32 @@ const ChartPage: React.FC = () => {
   }, []); // 빈 배열로 설정하여 컴포넌트 마운트 시 한 번만 실행
 
   return (
-    <div className="text-black">
-      <div>
-        <h1>Server-Sent Events with React</h1>
-        <div id="events">
-          {events.map((event, index) => (
-            <p key={index + "_ev"}>Message: {event}</p>
-          ))}
+    <div className="space-y-8">
+      <div className="bg-white rounded-xl p-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">📊 데이터 시각화 및 차트</h1>
+        
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">실시간 차트</h2>
+          <ChartTest1 />
+        </div>
+
+        <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">서버-센트 이벤트 로그</h3>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 h-48 overflow-y-auto">
+            {events.length > 0 ? (
+              <ul className="space-y-1">
+                {events.map((event, index) => (
+                  <li key={index + "_ev"} className="text-sm text-gray-700 py-1 border-b border-gray-200 last:border-b-0">
+                    Message: {event}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500 text-center py-8">연결을 기다리는 중...</p>
+            )}
+          </div>
         </div>
       </div>
-      <h1>chart test</h1>
-      <ChartTest1 />
     </div>
   );
 };

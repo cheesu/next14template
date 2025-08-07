@@ -137,8 +137,8 @@ const VesselIntegratedPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+      <div className="bg-white rounded-xl p-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">
           🩸 통합 혈관 분석 - 2D + 3D 동시 뷰
         </h2>
         
@@ -193,8 +193,8 @@ const VesselIntegratedPage: React.FC = () => {
         {/* 메인 컨테이너 - 반응형 2D와 3D 배치 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-8">
           {/* 2D 뷰 영역 */}
-          <div className="bg-gray-50 rounded-lg p-4 lg:p-6 order-2 lg:order-1">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">📊 2D 다중축 뷰</h3>
+          <div className="bg-white rounded-xl border border-gray-200 p-6 lg:p-8 order-2 lg:order-1 shadow-sm">
+            <h3 className="text-xl font-semibold text-gray-900 mb-6">📊 2D 다중축 뷰</h3>
             {points2D.length > 0 ? (
               <div className="w-full">
                 <VesselVisualization2D
@@ -218,9 +218,9 @@ const VesselIntegratedPage: React.FC = () => {
           </div>
 
           {/* 3D 뷰 영역 */}
-          <div className="order-1 lg:order-2">
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">🎯 3D 시각화</h3>
+          <div className="bg-white rounded-xl border border-gray-200 p-6 lg:p-8 order-1 lg:order-2 shadow-sm">
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">🎯 3D 시각화</h3>
             </div>
             <div className="w-full">
               {vesselPoints.length > 0 ? (
@@ -249,7 +249,7 @@ const VesselIntegratedPage: React.FC = () => {
 
         {/* 사용법 안내 - 반응형 개선 */}
         {vesselPoints.length > 0 && (
-          <div className="mt-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+          <div className="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-200 shadow-sm">
             <div className="flex items-center mb-4">
               <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -303,8 +303,8 @@ const VesselIntegratedPage: React.FC = () => {
 
         {/* 통계 정보 - 반응형 그리드 */}
         {vesselPoints.length > 0 && (
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
               <div className="flex items-center">
                 <div className="p-3 bg-blue-500 rounded-lg">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,13 +312,13 @@ const VesselIntegratedPage: React.FC = () => {
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <div className="text-3xl font-bold text-blue-900">{vesselPoints.length}</div>
-                  <div className="text-blue-700 font-medium">총 점 개수</div>
+                  <div className="text-3xl font-bold text-gray-900">{vesselPoints.length}</div>
+                  <div className="text-gray-600 font-medium">총 점 개수</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
               <div className="flex items-center">
                 <div className="p-3 bg-purple-500 rounded-lg">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -326,13 +326,13 @@ const VesselIntegratedPage: React.FC = () => {
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <div className="text-3xl font-bold text-purple-900">{selectedPoints.size}</div>
-                  <div className="text-purple-700 font-medium">선택된 점</div>
+                  <div className="text-3xl font-bold text-gray-900">{selectedPoints.size}</div>
+                  <div className="text-gray-600 font-medium">선택된 점</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200 sm:col-span-2 lg:col-span-1">
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm sm:col-span-2 lg:col-span-1">
               <div className="flex items-center">
                 <div className="p-3 bg-green-500 rounded-lg">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -340,10 +340,10 @@ const VesselIntegratedPage: React.FC = () => {
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <div className="text-3xl font-bold text-green-900">
+                  <div className="text-3xl font-bold text-gray-900">
                     {vesselPoints.length > 0 ? (vesselPoints.reduce((sum, p) => sum + p.d, 0) / vesselPoints.length).toFixed(2) : 0}
                   </div>
-                  <div className="text-green-700 font-medium">평균 직경</div>
+                  <div className="text-gray-600 font-medium">평균 직경</div>
                 </div>
               </div>
             </div>
@@ -351,7 +351,7 @@ const VesselIntegratedPage: React.FC = () => {
         )}
 
         {/* 선택된 점 표시 */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+        <div className="mt-8 p-6 bg-white rounded-xl border border-gray-200 shadow-sm">
           <div className="text-lg font-semibold text-gray-900">
             {selectedList}
           </div>

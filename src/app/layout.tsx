@@ -22,7 +22,7 @@ export default function RootLayout({ children }: LayoutProps) {
   return (
     <ReduxProvider>
       <html lang="ko">
-        <body className={inter.className + " min-h-screen bg-white dark:bg-slate-900"}>
+        <body className={inter.className + " min-h-screen bg-gray-50"}>
           {/* Main content area */}
           <div className="flex min-h-screen flex-col">
             {/* Top Header with Navigation */}
@@ -30,9 +30,9 @@ export default function RootLayout({ children }: LayoutProps) {
             
             {/* Main content */}
             <main className="flex-1 p-6">
-              <div className="mx-auto max-w-[95%]">
+              <div className="mx-auto max-w-7xl">
                 <Breadcrumb />
-                <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-8 min-h-[calc(100vh-10rem)]">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 min-h-[calc(100vh-10rem)]">
                   {children}
                 </div>
               </div>
