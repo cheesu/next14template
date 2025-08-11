@@ -11,7 +11,7 @@ import {
 
 import * as dicomParser from "dicom-parser";
 
-const imageIds = ["http://localhost:4000/dicom.dcm"];
+const imageIds = ["http://localhost:3000/dicom.dcm"];
 const renderingEngineId = "myRenderingEngine";
 const viewportId = "myViewport";
 const volumeId = "myVolume";

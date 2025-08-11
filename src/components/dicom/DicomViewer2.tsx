@@ -32,7 +32,7 @@ const DicomViewer2: React.FC = () => {
           cornerstoneWADOImageLoader.wadouri.fileManager.add(arrayBuffer);
         console.log("imageId:", imageId);
         cornerstone
-          .loadImage("wadouri:http://localhost:4000/dicom.dcm")
+          .loadImage("wadouri:http://localhost:3000/dicom.dcm")
           .then((image) => {
             cornerstone.displayImage(elementRef.current!, image);
           })

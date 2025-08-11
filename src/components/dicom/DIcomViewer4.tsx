@@ -8,7 +8,7 @@ const DicomViewer4: React.FC = () => {
     if (elementRef.current) {
       cornerstone.enable(elementRef.current);
       cornerstone
-        .loadImage("wadouri:http://localhost:4000/dicom.dcm")
+        .loadImage("wadouri:http://localhost:3000/dicom.dcm")
         .then((image) => {
           cornerstone.displayImage(elementRef.current!, image);
         })

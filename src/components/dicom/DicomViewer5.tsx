@@ -53,7 +53,7 @@ const DicomViewer5: React.FC = () => {
 
       renderingEngine.enableElement(viewportInput);
       const viewport = renderingEngine.getViewport(viewportInput.viewportId) as Types.IStackViewport;
-      await viewport.setStack(["wadouri:http://localhost:4000/dicom.dcm"], 0);
+      await viewport.setStack(["wadouri:http://localhost:3000/dicom.dcm"], 0);
 
       viewport.render();
     }
