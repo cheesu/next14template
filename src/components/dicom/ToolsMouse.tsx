@@ -145,7 +145,7 @@ const ToolsMouse: React.FC = ({}) => {
         });
 
         // Get Cornerstone imageIds and fetch metadata into RAM
-        const imageId = "wadouri:http://localhost:4000/dicom.dcm";
+        const imageId = "wadouri:http://localhost:3000/dicom.dcm";
 
         // 기존 렌더링 엔진 제거
         try {

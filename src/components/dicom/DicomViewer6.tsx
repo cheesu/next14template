@@ -81,7 +81,7 @@ const DicomViewer6: React.FC = () => {
       const testurl =
         "wadouri:https://raw.githubusercontent.com/cornerstonejs/cornerstone3D/main/packages/dicomImageLoader/testImages/CTImage.dcm_JPEGLSLosslessTransferSyntax_1.2.840.10008.1.2.4.80.dcm";
 
-      const imageId = "wadouri:http://localhost:4000/dicom.dcm";
+      const imageId = "wadouri:http://localhost:3000/dicom.dcm";
 
       viewport.setStack([imageId]).then(
         () => {

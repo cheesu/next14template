@@ -117,16 +117,16 @@ const StackView: React.FC = ({}) => {
       });
 
       // Get Cornerstone imageIds and fetch metadata into RAM
-      const imageId = "wadouri:http://localhost:4000/dicom/004.dcm";
+      const imageId = "wadouri:http://localhost:3000/dicom/004.dcm";
       const imageIds = [
-        "wadouri:http://localhost:4000/dicom/001.dcm",
-        "wadouri:http://localhost:4000/dicom/002.dcm",
-        "wadouri:http://localhost:4000/dicom/003.dcm",
-        "wadouri:http://localhost:4000/dicom/004.dcm",
-        "wadouri:http://localhost:4000/dicom/005.dcm",
-        "wadouri:http://localhost:4000/dicom/006.dcm",
-        "wadouri:http://localhost:4000/dicom/007.dcm",
-        "wadouri:http://localhost:4000/dicom/008.dcm",
+        "wadouri:http://localhost:3000/dicom/001.dcm",
+        "wadouri:http://localhost:3000/dicom/002.dcm",
+        "wadouri:http://localhost:3000/dicom/003.dcm",
+        "wadouri:http://localhost:3000/dicom/004.dcm",
+        "wadouri:http://localhost:3000/dicom/005.dcm",
+        "wadouri:http://localhost:3000/dicom/006.dcm",
+        "wadouri:http://localhost:3000/dicom/007.dcm",
+        "wadouri:http://localhost:3000/dicom/008.dcm",
       ];
 
       // Instantiate a rendering engine
