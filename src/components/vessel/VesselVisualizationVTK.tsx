@@ -43,6 +43,14 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
   const actorMapRef = useRef<Map<any, { idx: number; x: number; y: number; z: number; d: number }>>(new Map());
   const selectedSetRef = useRef<Set<number>>(new Set());
   const hoveredActorRef = useRef<any>(null);
+  const hoveredPidRef = useRef<number | null>(null);
+  const pidFromIdxRef = useRef<Map<number, number>>(new Map());
+  const onHoverRef = useRef<typeof onPointHover>(onPointHover);
+  const onClickRef = useRef<typeof onPointClick>(onPointClick);
+  const dragStateRef = useRef<{ isDown: boolean; startX: number; startY: number; startTs: number; dragging: boolean }>({ isDown: false, startX: 0, startY: 0, startTs: 0, dragging: false });
+
+  useEffect(() => { onHoverRef.current = onPointHover; }, [onPointHover]);
+  useEffect(() => { onClickRef.current = onPointClick; }, [onPointClick]);
   const [tooltip, setTooltip] = useState<{
     x: number;
     y: number;
@@ -57,23 +65,23 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
       console.log('포인트 없음 - VTK 초기화 안함');
       return;
     }
-
+    
     const initVTK = async () => {
       try {
         console.log('🚀 VTK.js 정말 기본부터 시작');
         
         if (!containerRef.current) {
           console.log('컨테이너 없음');
-          return;
-        }
-
+      return;
+    }
+    
         // 이미 초기화되었다면 재초기화하지 않음
         if (fsrwRef.current) {
           console.log('ℹ️ 이미 초기화된 VTK 컨텍스트가 있어 재사용합니다');
           setIsReady(true);
-          return;
-        }
-
+      return;
+    }
+    
         console.log('1️⃣ VTK.js 모듈 로드 시작');
         // 렌더링 프로파일을 반드시 등록해야 WebGL 매퍼/패스가 붙습니다
         const dynamicImport: (m: string) => Promise<any> = (m) => (Function('return import(arguments[0])') as any)(m);
@@ -89,9 +97,13 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
           vtkRenderWindowInteractor,
           vtkInteractorStyleTrackballCamera,
           vtkSphereSource,
-          vtkMapper,
           vtkActor,
-          vtkCellPicker,
+          vtkGlyph3DMapper,
+          vtkPolyData,
+          vtkPoints,
+          vtkDataArray,
+          vtkPointPicker,
+          DataSetConstants,
         ] = await Promise.all([
           import('@kitware/vtk.js/Rendering/Core/RenderWindow'),
           import('@kitware/vtk.js/Rendering/Core/Renderer'),
@@ -99,9 +111,13 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
           import('@kitware/vtk.js/Rendering/Core/RenderWindowInteractor'),
           import('@kitware/vtk.js/Interaction/Style/InteractorStyleTrackballCamera'),
           import('@kitware/vtk.js/Filters/Sources/SphereSource'),
-          import('@kitware/vtk.js/Rendering/Core/Mapper'),
           import('@kitware/vtk.js/Rendering/Core/Actor'),
-          import('@kitware/vtk.js/Rendering/Core/CellPicker'),
+          import('@kitware/vtk.js/Rendering/Core/Glyph3DMapper'),
+          import('@kitware/vtk.js/Common/DataModel/PolyData'),
+          import('@kitware/vtk.js/Common/Core/Points'),
+          import('@kitware/vtk.js/Common/Core/DataArray'),
+          import('@kitware/vtk.js/Rendering/Core/PointPicker'),
+          import('@kitware/vtk.js/Common/DataModel/DataSet/Constants'),
         ]);
         console.log('✅ 저수준 모듈 로드 완료');
 
@@ -115,9 +131,9 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
         const openGLRenderWindow = vtkOpenGLRenderWindow.default.newInstance();
         openGLRenderWindow.setContainer(container);
         renderWindow.addView(openGLRenderWindow);
-        // 크기 설정
+        // 크기 설정: 렌더 내부 픽셀 = CSS * DPR (인터랙터 디스플레이 좌표와 일치)
         const rect = container.getBoundingClientRect();
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const dpr = window.devicePixelRatio || 1;
         openGLRenderWindow.setSize(
           Math.max(1, Math.floor(rect.width * dpr)),
           Math.max(1, Math.floor(rect.height * dpr))
@@ -125,46 +141,78 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
         // 배경색 설정
         renderer.setBackground(0.9, 0.9, 0.9);
         
-        console.log('4️⃣ 모든 포인트에 대해 구체 생성');
-        const actors: Array<{ actor: any; idx: number }> = [];
+        console.log('4️⃣ Glyph3DMapper로 모든 포인트 구체 생성');
+        const numPts = points.length;
+        const polyData = vtkPolyData.default.newInstance();
+        const vtkPts = vtkPoints.default.newInstance();
+        const diameters = new Float32Array(numPts);
+        const colors = new Uint8Array(numPts * 3);
 
         // 직경 정규화(상대 스케일)
         const ds = points.map((p) => p.d);
         const dMin = Math.min(...ds);
         const dMax = Math.max(...ds);
         const dRange = Math.max(1e-6, dMax - dMin);
-        const minRadius = 0.8; // world unit
-        const maxRadius = 6.0; // world unit
 
-        for (let i = 0; i < points.length; i += 1) {
+        for (let i = 0; i < numPts; i += 1) {
           const p0 = points[i];
-          // 좌표계 변환
-          const p = coordinateSystem === 'medical'
-            ? { ...p0, x: p0.x, y: -p0.z, z: p0.y }
-            : p0;
+          const p = coordinateSystem === 'medical' ? { ...p0, x: p0.x, y: -p0.z, z: p0.y } : p0;
+          vtkPts.insertNextPoint(p.x, p.y, p.z);
           const t = (p.d - dMin) / dRange;
-          const radius = scaleByDiameter ? (minRadius + t * (maxRadius - minRadius)) : 3.0;
-
-          const sphereSource = vtkSphereSource.default.newInstance({
-            center: [p.x, p.y, p.z],
-            radius,
-            phiResolution: 12,
-            thetaResolution: 12,
-          });
-          const mapper = vtkMapper.default.newInstance();
-          mapper.setInputConnection(sphereSource.getOutputPort());
-          const actor = vtkActor.default.newInstance();
-          actor.setMapper(mapper);
-          // 기본 매트 빨간색
-          const prop = actor.getProperty();
-          prop.setColor(0.8, 0.1, 0.1);
-          prop.setSpecular(0.0);
-          prop.setDiffuse(0.8);
-          prop.setAmbient(0.2);
-          renderer.addActor(actor);
-          actors.push({ actor, idx: p.idx });
-          actorMapRef.current.set(actor, { idx: p.idx, x: p.x, y: p.y, z: p.z, d: p.d });
+          const radius = scaleByDiameter ? (0.8 + t * (6.0 - 0.8)) : 3.0;
+          diameters[i] = radius;
+          // 기본 빨간색
+          colors[i * 3 + 0] = 204;
+          colors[i * 3 + 1] = 26;
+          colors[i * 3 + 2] = 26;
+          // 포인트 인덱스→idx 매핑 저장
+          actorMapRef.current.set(i, { idx: p.idx, x: p.x, y: p.y, z: p.z, d: p.d });
+          pidFromIdxRef.current.set(p.idx, i);
         }
+
+        polyData.setPoints(vtkPts);
+        // diameter array
+        const diameterArray = vtkDataArray.default.newInstance({
+          name: 'Diameter',
+          values: diameters,
+          numberOfComponents: 1,
+          dataType: 'Float32Array',
+        });
+        // color array
+        const colorArray = vtkDataArray.default.newInstance({
+          name: 'Colors',
+          values: colors,
+          numberOfComponents: 3,
+          dataType: 'Uint8Array',
+        });
+        const pointData = polyData.getPointData();
+        pointData.addArray(diameterArray);
+        pointData.setScalars(colorArray);
+
+        const sphereSource = vtkSphereSource.default.newInstance({
+          radius: 1.0,
+          phiResolution: 12,
+          thetaResolution: 12,
+        });
+
+        const glyphMapper = vtkGlyph3DMapper.default.newInstance();
+        glyphMapper.setInputData(polyData);
+        glyphMapper.setSourceConnection(sphereSource.getOutputPort());
+        glyphMapper.setScaleArray('Diameter');
+        // 색상 스칼라 사용(직접 RGB)
+        glyphMapper.setScalarVisibility(true);
+        glyphMapper.setScalarModeToUsePointFieldData();
+        glyphMapper.setColorModeToDirectScalars();
+        if ((glyphMapper as any).setColorByArrayName) (glyphMapper as any).setColorByArrayName('Colors');
+
+        const actor = vtkActor.default.newInstance();
+        actor.setMapper(glyphMapper);
+        const prop = actor.getProperty();
+        prop.setSpecular(0.0);
+        prop.setDiffuse(0.9);
+        prop.setAmbient(0.2);
+        if ((prop as any).setInterpolationToFlat) (prop as any).setInterpolationToFlat();
+        renderer.addActor(actor);
         
         console.log('8️⃣ 카메라 리셋');
         renderer.resetCamera();
@@ -180,35 +228,85 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
         renderWindow.render();
         
         console.log('🎉 VTK.js 렌더링 성공!');
-        
-        // 참조 저장
-        vtkObjectsRef.current = { renderer, renderWindow, openGLRenderWindow, interactor, actors };
 
-        // 피커 설정 및 이벤트 바인딩
-        const cellPicker = vtkCellPicker.default.newInstance();
+        // 참조 저장
+        vtkObjectsRef.current = { renderer, renderWindow, openGLRenderWindow, interactor, actor, glyphMapper, polyData, vtkDataArrayFactory: vtkDataArray };
+
+        // 선택/호버 상태로 Colors 재계산 함수
+        const rebuildColors = (hoverPid: number | null) => {
+          const sel = selectedSetRef.current;
+          for (let i = 0; i < numPts; i += 1) {
+            const info = actorMapRef.current.get(i);
+            const isSelected = info ? sel.has(info.idx) : false;
+            if (isSelected || (hoverPid !== null && i === hoverPid)) {
+              colors[i * 3 + 0] = 0;
+              colors[i * 3 + 1] = 102;
+              colors[i * 3 + 2] = 255;
+            } else {
+              colors[i * 3 + 0] = 204;
+              colors[i * 3 + 1] = 26;
+              colors[i * 3 + 2] = 26;
+            }
+          }
+          polyData.getPointData().setScalars(vtkDataArray.default.newInstance({ name: 'Colors', values: colors, numberOfComponents: 3, dataType: 'Uint8Array' }));
+          polyData.modified();
+          renderWindow.render();
+        };
+
+        // 포인트 픽커: 포인트 인덱스 안정 추출
+        const picker = vtkPointPicker.default.newInstance();
+        if ((picker as any).setTolerance) (picker as any).setTolerance(0.025); // 비율 기반
 
         const handleWheel = (e: WheelEvent) => {
           e.preventDefault();
           e.stopPropagation();
         };
 
-        const getPickedActor = () => {
-          // vtkCellPicker: 일부 버전은 getActor(), 일부는 getActors() 제공
-          const actors = (cellPicker as any).getActors?.() as any[] | undefined;
-          if (actors && actors.length) return actors[0];
-          const actor = (cellPicker as any).getActor?.();
-          return actor || null;
+        const getPickedProp = () => {
+          const vp = (picker as any).getViewProp?.();
+          if (vp) return vp;
+          const a = (picker as any).getActor?.();
+          if (a) return a;
+          const list = (picker as any).getActors?.();
+          if (list && list.length) return list[0];
+          return null;
         };
 
+        // VTK 인터랙터 이벤트 사용 (정확한 디스플레이 좌표 제공)
         const handleMouseMove = (e: MouseEvent) => {
-          const rect = container.getBoundingClientRect();
+          const canvas = (openGLRenderWindow as any).getCanvas?.() as HTMLCanvasElement | undefined;
+          const rect = (canvas ? canvas.getBoundingClientRect() : container.getBoundingClientRect());
           const [gw, gh] = openGLRenderWindow.getSize();
-          const x = (e.clientX - rect.left) * (gw / Math.max(1, rect.width));
-          const y = gh - (e.clientY - rect.top) * (gh / Math.max(1, rect.height));
-          const picked = cellPicker.pick([x, y, 0], renderer);
-          if (picked) {
-            const viewProp = getPickedActor();
-            if (viewProp && actorMapRef.current.has(viewProp)) {
+          // 1) 캔버스 CSS 좌표 (top-left 원점 가정)
+          const xCss = e.clientX - rect.left;
+          const yCssTop = e.clientY - rect.top;
+          // 2) OpenGL 픽셀 좌표 (top-left 원점 가정)
+          const xScaledTop = xCss * (gw / Math.max(1, rect.width));
+          const yScaledTop = yCssTop * (gh / Math.max(1, rect.height));
+          // 3) OpenGL 픽셀 좌표 (bottom-left 원점 가정)
+          const yScaledBottom = gh - yScaledTop;
+
+          // 시도 1: CSS 좌표(top-left)
+          picker.pick([xCss, yCssTop, 0], renderer);
+          let viewProp = getPickedProp();
+          if (!viewProp) {
+            // 시도 2: OpenGL 픽셀(top-left)
+            picker.pick([xScaledTop, yScaledTop, 0], renderer);
+            viewProp = getPickedProp();
+          }
+          if (!viewProp) {
+            // 시도 3: OpenGL 픽셀(bottom-left)
+            picker.pick([xScaledTop, yScaledBottom, 0], renderer);
+            viewProp = getPickedProp();
+          }
+          const picked = !!viewProp;
+          // 디버그 로그
+          // eslint-disable-next-line no-console
+          console.log('mousemove pick', { rect: { w: rect.width, h: rect.height }, gl: { size: openGLRenderWindow.getSize() }, xCss, yCssTop, xScaledTop, yScaledTop, yScaledBottom, picked });
+          if (viewProp) {
+            // eslint-disable-next-line no-console
+            console.log('mousemove viewProp', true);
+            if (actorMapRef.current.has(viewProp)) {
               const info = actorMapRef.current.get(viewProp)!;
               // 이전 hover 해제(선택이 아니면 빨강 복귀)
               if (hoveredActorRef.current && hoveredActorRef.current !== viewProp) {
@@ -245,14 +343,31 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
         };
 
         const handleClick = (e: MouseEvent) => {
-          const rect = container.getBoundingClientRect();
+          const canvas = (openGLRenderWindow as any).getCanvas?.() as HTMLCanvasElement | undefined;
+          const rect = (canvas ? canvas.getBoundingClientRect() : container.getBoundingClientRect());
           const [gw, gh] = openGLRenderWindow.getSize();
-          const x = (e.clientX - rect.left) * (gw / Math.max(1, rect.width));
-          const y = gh - (e.clientY - rect.top) * (gh / Math.max(1, rect.height));
-          const picked = cellPicker.pick([x, y, 0], renderer);
-          if (picked) {
-            const viewProp = getPickedActor();
-            if (viewProp && actorMapRef.current.has(viewProp)) {
+          const xCss = e.clientX - rect.left;
+          const yCssTop = e.clientY - rect.top;
+          const xScaledTop = xCss * (gw / Math.max(1, rect.width));
+          const yScaledTop = yCssTop * (gh / Math.max(1, rect.height));
+          const yScaledBottom = gh - yScaledTop;
+          picker.pick([xCss, yCssTop, 0], renderer);
+          let viewProp = getPickedProp();
+          if (!viewProp) {
+            picker.pick([xScaledTop, yScaledTop, 0], renderer);
+            viewProp = getPickedProp();
+          }
+          if (!viewProp) {
+            picker.pick([xScaledTop, yScaledBottom, 0], renderer);
+            viewProp = getPickedProp();
+          }
+          const picked = !!viewProp;
+          // eslint-disable-next-line no-console
+          console.log('click pick', { rect: { w: rect.width, h: rect.height }, gl: { size: openGLRenderWindow.getSize() }, xCss, yCssTop, xScaledTop, yScaledTop, yScaledBottom, picked });
+          if (viewProp) {
+            // eslint-disable-next-line no-console
+            console.log('click viewProp', true);
+            if (actorMapRef.current.has(viewProp)) {
               const info = actorMapRef.current.get(viewProp)!;
               const set = selectedSetRef.current;
               const wasSelected = set.has(info.idx);
@@ -286,13 +401,91 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
         };
 
         container.addEventListener('wheel', handleWheel, { passive: false });
-        container.addEventListener('mousemove', handleMouseMove, { passive: true });
-        container.addEventListener('click', handleClick, { passive: true });
+        // 네이티브 대신 VTK 인터랙터 이벤트도 병행 등록
+        // 네이티브 이벤트는 좌표 불일치 야기 가능 → 인터랙터 이벤트만 사용
+        const offMove = (interactor as any).onMouseMove?.((callData: any) => {
+          const pos = callData?.position;
+          let xDisplay = 0;
+          let yDisplay = 0;
+          if (Array.isArray(pos)) {
+            xDisplay = pos[0] ?? 0;
+            yDisplay = pos[1] ?? 0;
+          } else if (pos && typeof pos.x === 'number' && typeof pos.y === 'number') {
+            xDisplay = pos.x;
+            yDisplay = pos.y;
+          }
+          picker.pick([xDisplay, yDisplay, 0], renderer);
+          // eslint-disable-next-line no-console
+          console.log('vtk onMouseMove pick', { xDisplay, yDisplay });
+          const pid = (picker as any).getPointId?.() ?? -1;
+          // eslint-disable-next-line no-console
+          console.log('pointId (hover)', pid);
+          if (pid >= 0 && pid < numPts) {
+            const canvas = (openGLRenderWindow as any).getCanvas?.() as HTMLCanvasElement | undefined;
+            const rect = (canvas ? canvas.getBoundingClientRect() : container.getBoundingClientRect());
+            const [glW, glH] = openGLRenderWindow.getSize();
+            const domX = rect.left + (xDisplay / Math.max(1, glW)) * rect.width;
+            const domY = rect.top + ((glH - yDisplay) / Math.max(1, glH)) * rect.height;
+            hoveredPidRef.current = pid;
+            const info = actorMapRef.current.get(pid)!;
+            setTooltip({ x: domX, y: domY, idx: info.idx, coord: [info.x, info.y, info.z], d: info.d, pinned: false });
+            rebuildColors(pid);
+            // 외부 콜백
+            try { onHoverRef.current?.(info.idx); } catch {}
+          }
+        });
+        const offPress = (interactor as any).onLeftButtonPress?.((callData: any) => {
+          const pos = callData?.position;
+          let xDisplay = 0;
+          let yDisplay = 0;
+          if (Array.isArray(pos)) {
+            xDisplay = pos[0] ?? 0;
+            yDisplay = pos[1] ?? 0;
+          } else if (pos && typeof pos.x === 'number' && typeof pos.y === 'number') {
+            xDisplay = pos.x;
+            yDisplay = pos.y;
+          }
+          dragStateRef.current = { isDown: true, startX: xDisplay, startY: yDisplay, startTs: Date.now(), dragging: false };
+        });
+        const offRelease = (interactor as any).onLeftButtonRelease?.((callData: any) => {
+          const ds = dragStateRef.current;
+          ds.isDown = false;
+          const now = Date.now();
+          const dt = now - ds.startTs;
+          if (ds.dragging || dt > 500) return; // 드래그 또는 오래 누름은 클릭 처리 안 함
+          const pos = callData?.position;
+          let xDisplay = 0;
+          let yDisplay = 0;
+          if (Array.isArray(pos)) { xDisplay = pos[0] ?? 0; yDisplay = pos[1] ?? 0; }
+          else if (pos && typeof pos.x === 'number' && typeof pos.y === 'number') { xDisplay = pos.x; yDisplay = pos.y; }
+          picker.pick([xDisplay, yDisplay, 0], renderer);
+          const pid = (picker as any).getPointId?.() ?? -1;
+          if (pid >= 0 && pid < numPts) {
+            const info = actorMapRef.current.get(pid)!;
+            const idx = info.idx;
+            const isSelected = selectedSetRef.current.has(idx);
+            if (isSelected) {
+              selectedSetRef.current.delete(idx);
+              setTooltip(null);
+            } else {
+              selectedSetRef.current.add(idx);
+              const canvas = (openGLRenderWindow as any).getCanvas?.() as HTMLCanvasElement | undefined;
+              const rect = (canvas ? canvas.getBoundingClientRect() : container.getBoundingClientRect());
+              const [glW, glH] = openGLRenderWindow.getSize();
+              const domX = rect.left + (xDisplay / Math.max(1, glW)) * rect.width;
+              const domY = rect.top + ((glH - yDisplay) / Math.max(1, glH)) * rect.height;
+              setTooltip({ x: domX, y: domY, idx, coord: [info.x, info.y, info.z], d: Number(info.d), pinned: true });
+            }
+            rebuildColors(hoveredPidRef.current);
+            try { onClickRef.current?.(idx); } catch {}
+          }
+        });
         container.addEventListener('mouseleave', handleMouseLeave, { passive: true });
 
         // 스타일로 스크롤/터치 제스처 차단
         container.style.touchAction = 'none';
         (container.style as any).overscrollBehavior = 'contain';
+        container.style.userSelect = 'none';
 
         // 정리 핸들러 저장
         vtkObjectsRef.current._cleanup = () => {
@@ -300,6 +493,10 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
           container.removeEventListener('mousemove', handleMouseMove as any);
           container.removeEventListener('click', handleClick as any);
           container.removeEventListener('mouseleave', handleMouseLeave as any);
+          // VTK 인터랙터 해제
+          if (offMove && typeof offMove.unsubscribe === 'function') offMove.unsubscribe();
+          if (offPress && typeof offPress.unsubscribe === 'function') offPress.unsubscribe();
+          if (offRelease && typeof offRelease.unsubscribe === 'function') offRelease.unsubscribe();
         };
         fsrwRef.current = renderWindow;
         
@@ -342,7 +539,7 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
     const timer = setTimeout(() => {
       initVTK();
     }, 100);
-
+    
     return () => {
       clearTimeout(timer);
       
@@ -358,6 +555,77 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
     };
   }, [points, coordinateSystem, scaleByDiameter]);
 
+  // 외부 선택/호버(2D↔3D) 동기화: props→VTK 반영
+  useEffect(() => {
+    const ctx = vtkObjectsRef.current;
+    if (!ctx || !ctx.polyData) return;
+    // 외부 선택 반영
+    selectedSetRef.current = new Set(Array.from(selectedPoints || []));
+    // 외부 호버 반영: hoveredPoint가 idx 기준이면 pid로 역매핑
+    if (typeof hoveredPoint === 'number' && pidFromIdxRef.current.has(hoveredPoint)) {
+      hoveredPidRef.current = pidFromIdxRef.current.get(hoveredPoint)!;
+    } else {
+      hoveredPidRef.current = null;
+    }
+    // Colors 재구성
+    const polyData = ctx.polyData;
+    const mapperActor = ctx.actor;
+    // 안전 체크
+    if (!polyData || !mapperActor) return;
+    // 기존 colors 추출 실패 시 새로 구성하지 않고 종료
+    const numPts = polyData.getPoints()?.getNumberOfPoints?.() || 0;
+    if (!numPts) return;
+    // 기존 colors 길이 확인 후 없으면 스킵
+    // 여기서는 rebuild 함수 없이 직접 단순 재계산
+    const colorsArr = new Uint8Array(numPts * 3);
+    for (let i = 0; i < numPts; i += 1) {
+      const info = actorMapRef.current.get(i);
+      const isSel = info ? selectedSetRef.current.has(info.idx) : false;
+      const isHover = hoveredPidRef.current !== null && hoveredPidRef.current === i;
+      if (isSel || isHover) {
+        colorsArr[i * 3 + 0] = 0; colorsArr[i * 3 + 1] = 102; colorsArr[i * 3 + 2] = 255;
+      } else {
+        colorsArr[i * 3 + 0] = 204; colorsArr[i * 3 + 1] = 26; colorsArr[i * 3 + 2] = 26;
+      }
+    }
+    polyData.getPointData().setScalars((window as any).vtkColorsArray || ctx.vtkColorsArray || null);
+    const vtkColors = (ctx.vtkColorsArray = (window as any).vtkDataArray?.default?.newInstance
+      ? (window as any).vtkDataArray.default.newInstance({ name: 'Colors', values: colorsArr, numberOfComponents: 3, dataType: 'Uint8Array' })
+      : require('@kitware/vtk.js/Common/Core/DataArray').default.newInstance({ name: 'Colors', values: colorsArr, numberOfComponents: 3, dataType: 'Uint8Array' }));
+    polyData.getPointData().setScalars(vtkColors);
+    polyData.modified();
+    ctx.renderWindow?.render?.();
+  }, [selectedPoints, hoveredPoint]);
+
+  // 컨테이너 리사이즈/DPR 변경 대응
+  useEffect(() => {
+    const ctx = vtkObjectsRef.current;
+    if (!ctx || !ctx.openGLRenderWindow) return;
+    const container = containerRef.current;
+    if (!container) return;
+    const RZ = (window as any).ResizeObserver;
+    const ro = RZ ? new RZ((entries: any) => {
+      for (const entry of entries) {
+        const rect = entry.contentRect || container.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        ctx.openGLRenderWindow.setSize(Math.max(1, Math.floor(rect.width * dpr)), Math.max(1, Math.floor(rect.height * dpr)));
+        ctx.renderWindow?.render?.();
+      }
+    }) : null;
+    ro && ro.observe && ro.observe(container);
+    const onWinResize = () => {
+      const rect = container.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      ctx.openGLRenderWindow.setSize(Math.max(1, Math.floor(rect.width * dpr)), Math.max(1, Math.floor(rect.height * dpr)));
+      ctx.renderWindow?.render?.();
+    };
+    window.addEventListener('resize', onWinResize);
+    return () => {
+      try { ro && ro.disconnect && ro.disconnect(); } catch {}
+      window.removeEventListener('resize', onWinResize);
+    };
+  }, [height]);
+  
   return (
     <div className="w-full bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
       <div className="mb-4">
@@ -384,6 +652,20 @@ const VesselVisualizationVTK: React.FC<VesselVisualizationVTKProps> = ({
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
               <p className="text-gray-600">VTK.js 단계별 초기화 중...</p>
               <p className="text-sm text-gray-500 mt-1">traverse 에러 디버깅</p>
+            </div>
+        </div>
+        )}
+
+        {tooltip && (
+          <div
+            className="pointer-events-none fixed z-[9999]"
+            style={{ left: tooltip.x + 12, top: tooltip.y + 12 }}
+          >
+            <div className="rounded bg-black/70 text-white text-xs p-2 shadow-lg">
+              <div className="font-semibold mb-1">Point #{tooltip.idx}</div>
+              <div>coord: [{tooltip.coord[0].toFixed(2)}, {tooltip.coord[1].toFixed(2)}, {tooltip.coord[2].toFixed(2)}]</div>
+              <div>d: {tooltip.d}</div>
+              {tooltip.pinned && <div className="text-amber-300 mt-1">pinned</div>}
             </div>
           </div>
         )}

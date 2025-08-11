@@ -11,6 +11,8 @@ declare module "@cornerstonejs/dicom-image-loader";
 declare module '@kitware/vtk.js/Rendering/Profiles/All';
 declare module '@kitware/vtk.js/Rendering/Profiles/Geometry';
 declare module '@kitware/vtk.js/Rendering/Core/CellPicker';
+// keep only used modules to avoid TS noise
+declare module '@kitware/vtk.js/Rendering/Core/CellPicker';
 declare module '@kitware/vtk.js/Rendering/Core/RenderWindow';
 declare module '@kitware/vtk.js/Rendering/Core/Renderer';
 declare module '@kitware/vtk.js/Rendering/OpenGL/RenderWindow';
