@@ -1,14 +1,20 @@
 "use client";
 import React, { useState, useCallback } from "react";
+import * as nifti from "nifti-reader-js";
+import * as pako from "pako";
 
 interface ExtractedData {
   niiMetadata?: {
     filename: string;
     size: number;
+    isCompressed?: boolean;
     dimensions?: [number, number, number];
     spacing?: [number, number, number];
     origin?: [number, number, number];
     orientation?: string;
+    dataType?: string;
+    voxelCount?: number;
+    description?: string;
   };
   mipMetadata?: {
     filename: string;
@@ -32,9 +38,178 @@ interface ExtractedData {
   };
 }
 
+// 유틸리티 함수들을 컴포넌트 외부로 이동
+const getOrientationString = (header: any): string => {
+  try {
+    // ITK-SNAP과 동일한 방향 계산 방식
+    
+    // Method 1: qform_code가 있는 경우 quaternion 우선 사용 (ITK-SNAP 방식)
+    if (header.qform_code > 0) {
+      const matrix = quaternionToMatrix(
+        header.quatern_b || 0,
+        header.quatern_c || 0, 
+        header.quatern_d || 0,
+        header.qoffset_x || 0,
+        header.qoffset_y || 0,
+        header.qoffset_z || 0,
+        header.pixDims[1] || 1,
+        header.pixDims[2] || 1,
+        header.pixDims[3] || 1,
+        header.pixDims[0] || 1
+      );
+      return getITKOrientationFromMatrix(matrix);
+    }
+    
+    // Method 2: sform_code가 있는 경우 sform 매트릭스 사용
+    if (header.sform_code > 0 && header.srow_x && header.srow_y && header.srow_z) {
+      return getITKOrientationFromMatrix([
+        [header.srow_x[0], header.srow_x[1], header.srow_x[2]],
+        [header.srow_y[0], header.srow_y[1], header.srow_y[2]], 
+        [header.srow_z[0], header.srow_z[1], header.srow_z[2]]
+      ]);
+    }
+    
+    // Fallback: ITK 기본 방향
+    return 'LPI';
+    
+  } catch (error) {
+    console.warn('방향 계산 오류:', error);
+    return 'Unknown';
+  }
+};
+
+const quaternionToMatrix = (qb: number, qc: number, qd: number, qx: number, qy: number, qz: number, dx: number, dy: number, dz: number, qfac: number) => {
+  // Quaternion을 회전 매트릭스로 변환
+  const qa = Math.sqrt(1.0 - (qb*qb + qc*qc + qd*qd));
+  
+  const rotation = [
+    [qa*qa + qb*qb - qc*qc - qd*qd, 2*(qb*qc - qa*qd), 2*(qb*qd + qa*qc)],
+    [2*(qb*qc + qa*qd), qa*qa + qc*qc - qb*qb - qd*qd, 2*(qc*qd - qa*qb)],
+    [2*(qb*qd - qa*qc), 2*(qc*qd + qa*qb), qa*qa + qd*qd - qb*qb - qc*qc]
+  ];
+  
+  // 스케일링 적용
+  return [
+    [rotation[0][0] * dx, rotation[0][1] * dy, rotation[0][2] * dz * qfac],
+    [rotation[1][0] * dx, rotation[1][1] * dy, rotation[1][2] * dz * qfac],
+    [rotation[2][0] * dx, rotation[2][1] * dy, rotation[2][2] * dz * qfac]
+  ];
+};
+
+const getITKOrientationFromMatrix = (matrix: number[][]): string => {
+  // ITK-SNAP의 정확한 방향 계산 방식 재현
+  console.log('🔍 방향 매트릭스 디버깅:', matrix);
+  
+  const orientationCodes = ['', '', ''];
+  
+  for (let imageAxis = 0; imageAxis < 3; imageAxis++) {
+    let maxAbsValue = 0;
+    let dominantAxis = 0;
+    
+    // 이 이미지 축이 어느 해부학적 축과 가장 연관이 큰지 찾기
+    for (let worldAxis = 0; worldAxis < 3; worldAxis++) {
+      const value = Math.abs(matrix[imageAxis][worldAxis]);
+      if (value > maxAbsValue) {
+        maxAbsValue = value;
+        dominantAxis = worldAxis;
+      }
+    }
+    
+    // 실제 값(부호 포함)으로 방향 결정
+    const actualValue = matrix[imageAxis][dominantAxis];
+    
+    console.log(`축 ${imageAxis}: 값=${actualValue.toFixed(3)}, 해부축=${dominantAxis}`);
+    
+    // ITK-SNAP 방향 매핑: NIfTI 표준에 따른 LPS+ 좌표계
+    if (dominantAxis === 0) { // X 축
+      orientationCodes[imageAxis] = actualValue > 0 ? 'L' : 'R'; // Left positive
+    } else if (dominantAxis === 1) { // Y 축 
+      orientationCodes[imageAxis] = actualValue > 0 ? 'P' : 'A'; // Posterior positive
+    } else { // Z 축
+      orientationCodes[imageAxis] = actualValue > 0 ? 'S' : 'I'; // Superior positive
+    }
+  }
+  
+  const result = orientationCodes.join('');
+  console.log('🧭 계산된 방향:', result);
+  return result;
+};
+
+const getNiftiDataTypeName = (datatypeCode: number): string => {
+  const dataTypes: { [key: number]: string } = {
+    2: 'UINT8',
+    4: 'INT16', 
+    8: 'INT32',
+    16: 'FLOAT32',
+    64: 'FLOAT64',
+    256: 'INT8',
+    512: 'UINT16',
+    768: 'UINT32'
+  };
+  return dataTypes[datatypeCode] || `Unknown (${datatypeCode})`;
+};
+
 const DataExtractorPage: React.FC = () => {
   const [extractedData, setExtractedData] = useState<ExtractedData>({});
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const parseNiftiFile = useCallback(async (file: File) => {
+    return new Promise<any>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const arrayBuffer = e.target?.result as ArrayBuffer;
+          
+          // gzip 파일인지 확인
+          const isGzipped = file.name.endsWith('.gz');
+          
+          let niftiBuffer: ArrayBuffer;
+          if (isGzipped) {
+            try {
+              // gzip 압축 해제
+              const uint8Array = new Uint8Array(arrayBuffer);
+              const decompressed = pako.inflate(uint8Array);
+              niftiBuffer = decompressed.buffer as ArrayBuffer;
+            } catch (error) {
+              throw new Error('압축 해제에 실패했습니다. 파일이 손상되었을 수 있습니다.');
+            }
+          } else {
+            niftiBuffer = arrayBuffer;
+          }
+          
+          // 니프티 헤더 파싱
+          if (!nifti.isNIFTI(niftiBuffer)) {
+            throw new Error('유효한 NIfTI 파일이 아닙니다.');
+          }
+          
+          const header = nifti.readHeader(niftiBuffer);
+          if (!header) {
+            throw new Error('NIfTI 헤더를 읽을 수 없습니다.');
+          }
+          
+          // 헤더 정보 추출
+          const metadata = {
+            filename: file.name,
+            size: file.size,
+            isCompressed: isGzipped,
+            dimensions: [header.dims[1], header.dims[2], header.dims[3]] as [number, number, number],
+            spacing: [header.pixDims[1], header.pixDims[2], header.pixDims[3]] as [number, number, number],
+            origin: [header.qoffset_x || 0, header.qoffset_y || 0, header.qoffset_z || 0] as [number, number, number],
+            orientation: getOrientationString(header),
+            dataType: getNiftiDataTypeName(header.datatypeCode),
+            voxelCount: header.dims[1] * header.dims[2] * header.dims[3],
+            description: header.description || ''
+          };
+          
+          resolve(metadata);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = () => reject(new Error('파일을 읽는데 실패했습니다.'));
+      reader.readAsArrayBuffer(file);
+    });
+  }, []);
 
   const handleNiftiUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -42,22 +217,17 @@ const DataExtractorPage: React.FC = () => {
 
     setIsProcessing(true);
     try {
+      const niiMetadata = await parseNiftiFile(file);
       setExtractedData(prev => ({
         ...prev,
-        niiMetadata: {
-          filename: file.name,
-          size: file.size,
-          dimensions: [231, 118, 209],
-          spacing: [1.0, 1.0, 1.0],
-          origin: [-346.04, -355.04, -207.25],
-          orientation: "LPI"
-        }
+        niiMetadata
       }));
-    } catch (error) {
-      alert('NII 파일 처리 중 오류가 발생했습니다.');
+    } catch (error: any) {
+      console.error('NII 파일 파싱 오류:', error);
+      alert(`NII 파일 처리 중 오류가 발생했습니다: ${error.message}`);
     }
     setIsProcessing(false);
-  }, []);
+  }, [parseNiftiFile]);
 
   const handleMipUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -148,12 +318,16 @@ const DataExtractorPage: React.FC = () => {
 
     return `// 🩸 통합 혈관 분석 화면에서 사용할 설정값
 const vesselConfig = {
-  // NII 파일 메타데이터
+  // NII 파일 메타데이터 (실제 파일에서 추출됨)
   niiMetadata: {
+    filename: "${niiMetadata?.filename || 'sample.nii'}",
     dimensions: ${niiMetadata ? `[${niiMetadata.dimensions?.join(', ')}]` : '[231, 118, 209]'},
-    spacing: ${niiMetadata ? `[${niiMetadata.spacing?.join(', ')}]` : '[1.0, 1.0, 1.0]'},
-    origin: ${niiMetadata ? `[${niiMetadata.origin?.join(', ')}]` : '[-346.04, -355.04, -207.25]'},
-    orientation: "${niiMetadata?.orientation || 'LPI'}"
+    spacing: ${niiMetadata ? `[${niiMetadata.spacing?.map(s => s.toFixed(3)).join(', ')}]` : '[1.0, 1.0, 1.0]'},
+    origin: ${niiMetadata ? `[${niiMetadata.origin?.map(o => o.toFixed(2)).join(', ')}]` : '[-346.04, -355.04, -207.25]'},
+    orientation: "${niiMetadata?.orientation || 'LPI'}",
+    dataType: "${niiMetadata?.dataType || 'FLOAT32'}",
+    voxelCount: ${niiMetadata?.voxelCount || 0}${niiMetadata?.description ? `,
+    description: "${niiMetadata.description.replace(/"/g, '\\"')}"` : ''}
   },
   
   // 좌표 데이터 메타데이터
@@ -193,7 +367,9 @@ const vesselConfig = {
           </div>
           <p className="text-blue-800 text-sm">
             니프티 파일(.nii), MIP 이미지, 좌표 데이터(.json)를 업로드하면 
-            혈관 분석 화면에서 사용할 메타데이터를 자동으로 추출합니다.
+            실제 파일에서 메타데이터를 읽어와 혈관 분석 화면에서 사용할 설정값을 자동으로 생성합니다.
+            <br />
+            <span className="text-blue-600 font-medium">✨ 실제 NIfTI 헤더 파싱 + .nii.gz 압축 파일 + 정확한 방향 계산!</span>
           </p>
         </div>
 
@@ -204,7 +380,11 @@ const vesselConfig = {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">NII 파일</h3>
-              <p className="text-gray-600 text-sm mb-4">니프티 파일 (.nii, .nii.gz)</p>
+              <p className="text-gray-600 text-sm mb-4">
+                니프티 파일 (.nii, .nii.gz)
+                <br />
+                <span className="text-green-600 font-medium text-xs">✅ .nii.gz 압축 파일 지원!</span>
+              </p>
             </div>
             <input
               type="file"
@@ -257,7 +437,7 @@ const vesselConfig = {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span className="text-yellow-800">파일 처리 중...</span>
+              <span className="text-yellow-800">파일 분석 중... 압축 해제 및 메타데이터를 추출하고 있습니다.</span>
             </div>
           </div>
         )}
@@ -278,20 +458,51 @@ const vesselConfig = {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-blue-700 font-medium">크기:</span>
-                  <span className="text-blue-800">{(extractedData.niiMetadata.size / 1024 / 1024).toFixed(2)} MB</span>
+                  <span className="text-blue-800">
+                    {(extractedData.niiMetadata.size / 1024 / 1024).toFixed(2)} MB
+                    {extractedData.niiMetadata.isCompressed && (
+                      <span className="ml-1 text-xs bg-green-100 text-green-700 px-1 rounded">압축됨</span>
+                    )}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-blue-700 font-medium">차원:</span>
                   <span className="text-blue-800">{extractedData.niiMetadata.dimensions?.join(' × ')}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span className="text-blue-700 font-medium">복셀 수:</span>
+                  <span className="text-blue-800">{extractedData.niiMetadata.voxelCount?.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
                   <span className="text-blue-700 font-medium">간격:</span>
-                  <span className="text-blue-800">{extractedData.niiMetadata.spacing?.join(' × ')}</span>
+                  <span className="text-blue-800">{extractedData.niiMetadata.spacing?.map(s => s.toFixed(2)).join(' × ')}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-blue-700 font-medium">원점:</span>
+                  <span className="text-blue-800 text-xs">[{extractedData.niiMetadata.origin?.map(o => o.toFixed(1)).join(', ')}]</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-blue-700 font-medium">방향:</span>
-                  <span className="text-blue-800">{extractedData.niiMetadata.orientation}</span>
+                  <span className="text-blue-800 flex items-center">
+                    {extractedData.niiMetadata.orientation}
+                    <span className="ml-1 text-xs text-blue-600 cursor-help" title="R=Right, L=Left, A=Anterior, P=Posterior, S=Superior, I=Inferior">
+                      ⓘ
+                    </span>
+                    <span className="ml-2 text-xs bg-amber-100 text-amber-700 px-1 rounded">
+                      ITK 방식
+                    </span>
+                  </span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-blue-700 font-medium">데이터 타입:</span>
+                  <span className="text-blue-800">{extractedData.niiMetadata.dataType}</span>
+                </div>
+                {extractedData.niiMetadata.description && (
+                  <div className="pt-2 border-t border-blue-200">
+                    <span className="text-blue-700 font-medium">설명:</span>
+                    <p className="text-blue-800 text-xs mt-1 break-words">{extractedData.niiMetadata.description}</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -402,7 +613,9 @@ const vesselConfig = {
               </div>
               <p className="text-amber-800 text-sm">
                 위 설정 코드를 복사하여 <strong>🩸 통합 혈관 분석</strong> 화면의 하드코딩된 부분을 대체하여 사용하세요.
-                이렇게 하면 업로드된 파일의 실제 메타데이터를 동적으로 활용할 수 있습니다.
+                <br />
+                <strong>✨ 이제 실제 니프티 파일에서 추출한 정확한 메타데이터</strong>(차원, 간격, 원점, 데이터 타입 등)를 
+                동적으로 활용할 수 있습니다.
               </p>
             </div>
           </div>
