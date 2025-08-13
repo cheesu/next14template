@@ -26,6 +26,7 @@ interface VesselVisualization2DProps {
   flipBackground?: boolean;
   bgImages?: {[key: string]: HTMLImageElement | null};
   compact?: boolean; // 작은 크기로 표시할지 여부
+  coordinateSystem?: string; // 좌표계 선택
 }
 
 const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
@@ -37,7 +38,8 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
   diameterCheck = true,
   flipBackground = false,
   bgImages = { XY: null, XZ: null, YZ: null },
-  compact = false
+  compact = false,
+  coordinateSystem = 'LPI'
 }) => {
   const canvasXYRef = useRef<HTMLCanvasElement>(null);
   const canvasXZRef = useRef<HTMLCanvasElement>(null);
@@ -103,10 +105,32 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
   }, []);
 
   const getProjection = (p: Point, view: string): Projection => {
+    // 선택된 좌표계에 따른 변환
+    let transformedX, transformedY, transformedZ;
+    
+    switch(coordinateSystem) {
+      case 'RAS': // Right-Anterior-Superior
+        transformedX = p.x;   // Right: 양수 X
+        transformedY = p.y;   // Anterior: 양수 Y
+        transformedZ = p.z;   // Superior: 양수 Z
+        break;
+      case 'LPS': // Left-Posterior-Superior  
+        transformedX = -p.x;  // Left: 음수 X
+        transformedY = -p.y;  // Posterior: 음수 Y
+        transformedZ = p.z;   // Superior: 양수 Z
+        break;
+      case 'LPI': // Left-Posterior-Inferior
+      default:
+        transformedX = -p.x;  // Left: 음수 X
+        transformedY = -p.y;  // Posterior: 음수 Y
+        transformedZ = -p.z;  // Inferior: 음수 Z
+        break;
+    }
+    
     switch(view) {
-      case 'XY': return { a: p.x, b: p.y };
-      case 'XZ': return { a: p.x, b: p.z };
-      case 'YZ': return { a: p.y, b: p.z };
+      case 'XY': return { a: transformedX, b: transformedY }; // X-Y 평면
+      case 'XZ': return { a: transformedX, b: transformedZ }; // X-Z 평면
+      case 'YZ': return { a: transformedY, b: transformedZ }; // Y-Z 평면
       default: return { a: 0, b: 0 };
     }
   };
@@ -143,6 +167,7 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
     points.forEach((p, i) => {
       const { a, b } = proj[i];
       p[`screenX_${view}`] = (a - minA) * uniformScale + offsetX;
+      // Y축 방향 보정: 화면 좌표계에서는 아래쪽이 양수이므로 뒤집기
       p[`screenY_${view}`] = h - ((b - minB) * uniformScale + offsetY);
     });
   };
@@ -264,7 +289,7 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
 
   useEffect(() => {
     drawAll();
-  }, [drawAll]);
+  }, [drawAll, coordinateSystem]);
 
   if (compact) {
     // 작은 크기 레이아웃 (통합 뷰용) - 반응형 개선
@@ -274,7 +299,7 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
         <div className="flex justify-center">
           <div className="text-center">
             <p className="text-sm font-semibold text-gray-700 mb-2">
-              XZ View (메인)
+              XZ View (메인) - {coordinateSystem}: 좌우/위아래
             </p>
             <canvas
               ref={canvasXZRef}
@@ -292,7 +317,7 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
         {/* XY, YZ Views - 반응형 그리드 */}
         <div className={`grid gap-3 ${isSmallScreen ? 'grid-cols-1' : 'grid-cols-2'} justify-items-center`}>
           <div className="text-center">
-            <p className="text-xs font-medium text-gray-600 mb-1">XY View</p>
+            <p className="text-xs font-medium text-gray-600 mb-1">XY View - {coordinateSystem} Axial: 좌우/전후</p>
             <canvas
               ref={canvasXYRef}
               width={canvasSize}
@@ -306,7 +331,7 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
           </div>
 
           <div className="text-center">
-            <p className="text-xs font-medium text-gray-600 mb-1">YZ View</p>
+            <p className="text-xs font-medium text-gray-600 mb-1">YZ View - {coordinateSystem}: 전후/위아래</p>
             <canvas
               ref={canvasYZRef}
               width={canvasSize}
@@ -330,7 +355,7 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
       <div className="flex justify-center">
         <div className="text-center w-full">
           <p className={`font-bold text-gray-800 mb-4 ${isSmallScreen ? 'text-lg' : 'text-2xl'}`}>
-            🔍 XZ View (Y제거) - 메인 뷰
+            🔍 XZ View (전후축 제거) - {coordinateSystem} 메인 뷰: 좌우/위아래  
           </p>
           <div className="flex justify-center">
             <canvas
@@ -353,7 +378,7 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
       }`}>
         <div className="text-center">
           <p className={`font-semibold text-gray-700 mb-3 ${isSmallScreen ? 'text-base' : 'text-lg'}`}>
-            XY View (Z제거)
+            XY View (위아래축 제거) - {coordinateSystem} Axial: 좌우/전후
           </p>
           <canvas
             ref={canvasXYRef}
@@ -369,7 +394,7 @@ const VesselVisualization2D: React.FC<VesselVisualization2DProps> = ({
 
         <div className="text-center">
           <p className={`font-semibold text-gray-700 mb-3 ${isSmallScreen ? 'text-base' : 'text-lg'}`}>
-            YZ View (X제거)
+            YZ View (좌우축 제거) - {coordinateSystem}: 전후/위아래
           </p>
           <canvas
             ref={canvasYZRef}

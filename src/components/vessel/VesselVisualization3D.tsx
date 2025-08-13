@@ -18,12 +18,14 @@ interface VesselSphereProps {
   point: VesselPoint;
   isSelected: boolean;
   isHovered: boolean;
+  coordinateSystem: string;
 }
 
 const VesselSphere: React.FC<VesselSphereProps> = ({
   point,
   isSelected,
   isHovered,
+  coordinateSystem,
 }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   
@@ -37,11 +39,39 @@ const VesselSphere: React.FC<VesselSphereProps> = ({
   const color = isSelected ? "#0066ff" : isHovered ? "#0066ff" : "#ff0000";
   const scale = isSelected || isHovered ? 1.5 : 1;
 
+  // 선택된 좌표계에 따른 변환
+  let transformedPosition: [number, number, number];
+  
+  switch(coordinateSystem) {
+    case 'RAS': // Right-Anterior-Superior
+      transformedPosition = [
+        point.position[0],   // Right: 양수 X
+        point.position[1],   // Anterior: 양수 Y
+        point.position[2]    // Superior: 양수 Z
+      ];
+      break;
+    case 'LPS': // Left-Posterior-Superior  
+      transformedPosition = [
+        -point.position[0],  // Left: 음수 X
+        -point.position[1],  // Posterior: 음수 Y
+        point.position[2]    // Superior: 양수 Z
+      ];
+      break;
+    case 'LPI': // Left-Posterior-Inferior
+    default:
+      transformedPosition = [
+        -point.position[0],  // Left: 음수 X
+        -point.position[1],  // Posterior: 음수 Y
+        -point.position[2]   // Inferior: 음수 Z
+      ];
+      break;
+  }
+
   return (
     <group>
       <Sphere
         ref={meshRef}
-        position={point.position}
+        position={transformedPosition}
         args={[point.radius * scale, 16, 16]}
         userData={{ vesselPointIdx: point.idx }}
       >
@@ -50,7 +80,7 @@ const VesselSphere: React.FC<VesselSphereProps> = ({
       
       {(isSelected || isHovered) && (
         <Html
-          position={[point.position[0] + point.radius + 2, point.position[1] + point.radius + 2, point.position[2]]}
+          position={[transformedPosition[0] + point.radius + 2, transformedPosition[1] + point.radius + 2, transformedPosition[2]]}
           distanceFactor={10}
           style={{
             color: 'white',
@@ -75,12 +105,38 @@ const VesselSphere: React.FC<VesselSphereProps> = ({
   );
 };
 
-const AxisLabels: React.FC = () => {
+const AxisLabels: React.FC<{ coordinateSystem: string }> = ({ coordinateSystem }) => {
+  const getAxisLabels = () => {
+    switch(coordinateSystem) {
+      case 'RAS':
+        return {
+          x: { pos: [35, 0, 0], label: '+X (Right 오른쪽)' },
+          y: { pos: [0, 35, 0], label: '+Y (Anterior 전방)' },
+          z: { pos: [0, 0, 35], label: '+Z (Superior 위)' }
+        };
+      case 'LPS':
+        return {
+          x: { pos: [-35, 0, 0], label: '-X (Left 왼쪽)' },
+          y: { pos: [0, -35, 0], label: '-Y (Posterior 후방)' },
+          z: { pos: [0, 0, 35], label: '+Z (Superior 위)' }
+        };
+      case 'LPI':
+      default:
+        return {
+          x: { pos: [-35, 0, 0], label: '-X (Left 왼쪽)' },
+          y: { pos: [0, -35, 0], label: '-Y (Posterior 후방)' },
+          z: { pos: [0, 0, -35], label: '-Z (Inferior 아래)' }
+        };
+    }
+  };
+
+  const labels = getAxisLabels();
+
   return (
     <group>
-      {/* X축 라벨 (좌우) */}
+      {/* X축 라벨 */}
       <Html
-        position={[35, 0, 0]}
+        position={labels.x.pos as [number, number, number]}
         distanceFactor={10}
         style={{
           color: 'red',
@@ -92,12 +148,12 @@ const AxisLabels: React.FC = () => {
           textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
         }}
       >
-        X (좌우)
+        {labels.x.label}
       </Html>
       
-      {/* Y축 라벨 (위아래) */}
+      {/* Y축 라벨 */}
       <Html
-        position={[0, 35, 0]}
+        position={labels.y.pos as [number, number, number]}
         distanceFactor={10}
         style={{
           color: 'green',
@@ -109,12 +165,12 @@ const AxisLabels: React.FC = () => {
           textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
         }}
       >
-        Y (위아래)
+        {labels.y.label}
       </Html>
       
-      {/* Z축 라벨 (앞뒤) */}
+      {/* Z축 라벨 */}
       <Html
-        position={[0, 0, 35]}
+        position={labels.z.pos as [number, number, number]}
         distanceFactor={10}
         style={{
           color: 'blue',
@@ -126,7 +182,7 @@ const AxisLabels: React.FC = () => {
           textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
         }}
       >
-        Z (앞뒤)
+        {labels.z.label}
       </Html>
     </group>
   );
@@ -199,25 +255,45 @@ const Scene: React.FC<{
     };
   }, [handlePointerMove, handlePointerClick, gl.domElement]);
 
-  // 자동으로 카메라 위치를 혈관 데이터에 맞게 조정
+  // 자동으로 카메라 위치를 혈관 데이터에 맞게 조정 (LPS 좌표계)
   React.useEffect(() => {
     if (points.length > 0) {
       const box = new THREE.Box3();
       points.forEach(p => {
-        box.expandByPoint(new THREE.Vector3(p.position[0], p.position[1], p.position[2]));
+        // 선택된 좌표계에 따른 변환으로 bounding box 계산
+        let x, y, z;
+        switch(coordinateSystem) {
+          case 'RAS':
+            x = p.position[0]; y = p.position[1]; z = p.position[2];
+            break;
+          case 'LPS':
+            x = -p.position[0]; y = -p.position[1]; z = p.position[2];
+            break;
+          case 'LPI':
+          default:
+            x = -p.position[0]; y = -p.position[1]; z = -p.position[2];
+            break;
+        }
+        box.expandByPoint(new THREE.Vector3(x, y, z));
       });
       
       const size = box.getSize(new THREE.Vector3());
       const maxSize = Math.max(size.x, size.y, size.z);
       const distance = maxSize * 1.8;
       
-      // 좌표계에 따라 다른 시점에서 시작
-      if (coordinateSystem === 'medical') {
-        camera.position.set(distance, distance * 0.5, -distance);
-      } else {
-        camera.position.set(distance, distance, distance);
+      // 좌표계에 따른 카메라 위치 조정
+      switch(coordinateSystem) {
+        case 'RAS':
+          camera.position.set(distance, distance * 0.8, distance);
+          break;
+        case 'LPS':
+          camera.position.set(-distance, -distance * 0.8, distance);
+          break;
+        case 'LPI':
+        default:
+          camera.position.set(-distance, -distance * 0.8, distance);
+          break;
       }
-      
       camera.lookAt(0, 0, 0);
     }
   }, [points, camera, coordinateSystem]);
@@ -237,6 +313,7 @@ const Scene: React.FC<{
             point={point}
             isSelected={selectedPoints.has(point.idx)}
             isHovered={hoveredPoint === point.idx}
+            coordinateSystem={coordinateSystem}
           />
         ))}
       </group>
@@ -245,7 +322,7 @@ const Scene: React.FC<{
       <axesHelper args={[30]} />
       
       {/* 축 라벨 */}
-      <AxisLabels />
+      <AxisLabels coordinateSystem={coordinateSystem} />
       
       {/* 중심점 표시 (작은 노란 구체) */}
       <Sphere position={[0, 0, 0]} args={[0.5]}>

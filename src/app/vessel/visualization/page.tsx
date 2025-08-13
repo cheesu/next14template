@@ -29,6 +29,7 @@ const VesselVisualizationPage: React.FC = () => {
   const [indexInput, setIndexInput] = useState<string>("");
   const [diameterCheck, setDiameterCheck] = useState<boolean>(true);
   const [flipBackground, setFlipBackground] = useState<boolean>(false);
+  const [coordinateSystem, setCoordinateSystem] = useState<string>('LPI');
   const [bgImages, setBgImages] = useState<{[key: string]: HTMLImageElement | null}>({
     XY: null,
     XZ: null,
@@ -83,10 +84,32 @@ const VesselVisualizationPage: React.FC = () => {
   };
 
   const getProjection = (p: Point, view: string): Projection => {
+    // 선택된 좌표계에 따른 변환
+    let transformedX, transformedY, transformedZ;
+    
+    switch(coordinateSystem) {
+      case 'RAS': // Right-Anterior-Superior
+        transformedX = p.x;   // Right: 양수 X
+        transformedY = p.y;   // Anterior: 양수 Y
+        transformedZ = p.z;   // Superior: 양수 Z
+        break;
+      case 'LPS': // Left-Posterior-Superior  
+        transformedX = -p.x;  // Left: 음수 X
+        transformedY = -p.y;  // Posterior: 음수 Y
+        transformedZ = p.z;   // Superior: 양수 Z
+        break;
+      case 'LPI': // Left-Posterior-Inferior
+      default:
+        transformedX = -p.x;  // Left: 음수 X
+        transformedY = -p.y;  // Posterior: 음수 Y
+        transformedZ = -p.z;  // Inferior: 음수 Z
+        break;
+    }
+    
     switch(view) {
-      case 'XY': return { a: p.x, b: p.y };
-      case 'XZ': return { a: p.x, b: p.z };
-      case 'YZ': return { a: p.y, b: p.z };
+      case 'XY': return { a: transformedX, b: transformedY }; // X-Y 평면
+      case 'XZ': return { a: transformedX, b: transformedZ }; // X-Z 평면
+      case 'YZ': return { a: transformedY, b: transformedZ }; // Y-Z 평면
       default: return { a: 0, b: 0 };
     }
   };
@@ -100,49 +123,35 @@ const VesselVisualizationPage: React.FC = () => {
     const h = canvas.height;
 
     const proj = points.map(p => getProjection(p, view));
-    
-    // ITK-SNAP의 전체 voxel 공간 사용 (중요!)
-    const voxel = voxelDimensions[view as keyof typeof voxelDimensions];
-    const bgImage = bgImages[view];
-    
-    // 전체 voxel 공간의 크기 (0부터 최대값까지)
-    const fullVoxelWidth = voxel.width;   // 231, 231, 118
-    const fullVoxelHeight = voxel.height; // 118, 209, 209
-    
-    // 실제 이미지가 있으면 그 크기 기준, 없으면 voxel 크기 기준
-    let targetWidth, targetHeight;
-    if (bgImage) {
-      targetWidth = bgImage.width;
-      targetHeight = bgImage.height;
-    } else {
-      targetWidth = fullVoxelWidth;
-      targetHeight = fullVoxelHeight;
-    }
-    
-    // 캔버스 크기에 맞춰 스케일 계산 (전체 voxel 공간 기준)
-    const scaleX = (w - padding * 2) / targetWidth;
-    const scaleY = (h - padding * 2) / targetHeight;
-    
+
+    // 데이터 범위 계산 (중심점이 이동된 좌표 기준)
+    const minA = Math.min(...proj.map(p => p.a));
+    const maxA = Math.max(...proj.map(p => p.a));
+    const minB = Math.min(...proj.map(p => p.b));
+    const maxB = Math.max(...proj.map(p => p.b));
+
+    // 데이터 범위
+    const dataRangeX = maxA - minA || 1;
+    const dataRangeY = maxB - minB || 1;
+
+    // 각 축별 스케일 계산
+    const scaleX = (w - padding * 2) / dataRangeX;
+    const scaleY = (h - padding * 2) / dataRangeY;
+
     // 종횡비 보정을 위해 통일된 스케일 사용
-    const uniformScale = Math.min(scaleX, scaleY);
-    
+    const dataUniformScale = Math.min(scaleX, scaleY);
+
     // 중앙 정렬을 위한 오프셋 계산
-    const scaledWidth = targetWidth * uniformScale;
-    const scaledHeight = targetHeight * uniformScale;
-    const offsetX = (w - scaledWidth) / 2;
-    const offsetY = (h - scaledHeight) / 2;
+    const dataOffsetX = (w - dataRangeX * dataUniformScale) / 2;
+    const dataOffsetY = (h - dataRangeY * dataUniformScale) / 2;
 
     points.forEach((p, i) => {
       const { a, b } = proj[i];
       
-      // voxel 좌표를 이미지 픽셀 좌표로 변환
-      const imageX = (a / fullVoxelWidth) * targetWidth;
-      const imageY = (b / fullVoxelHeight) * targetHeight;
-      
-      // 캔버스 좌표로 최종 변환
-      p[`screenX_${view}`] = imageX * uniformScale + offsetX;
-      // PNG는 우하단이 원점이므로 Y축 방향 보정
-      p[`screenY_${view}`] = h - (imageY * uniformScale + offsetY);
+      // 데이터 범위 기준으로 화면 좌표 계산 (다른 페이지들과 동일한 방식)
+      p[`screenX_${view}`] = (a - minA) * dataUniformScale + dataOffsetX;
+      // Y축 방향 보정: 화면 좌표계에서는 아래쪽이 양수이므로 뒤집기
+      p[`screenY_${view}`] = h - ((b - minB) * dataUniformScale + dataOffsetY);
     });
   };
 
@@ -224,14 +233,31 @@ const VesselVisualizationPage: React.FC = () => {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target?.result as string);
+        
+        // 다른 페이지들과 동일하게 데이터 중심점 계산
+        let centerX = 0, centerY = 0, centerZ = 0;
+        data.forEach(([x, y, z]: number[]) => {
+          centerX += x;
+          centerY += y;
+          centerZ += z;
+        });
+        centerX /= data.length;
+        centerY /= data.length;
+        centerZ /= data.length;
+        
+        console.log('데이터 중심점:', { centerX, centerY, centerZ });
+        
+        // 중심점을 원점으로 이동시켜서 점들 생성
         const processedPoints = data.map(([x, y, z, d]: number[], i: number) => ({
           idx: i + 1,
-          x,
-          y,
-          z,
+          x: x - centerX,  // 중심점을 원점으로 이동
+          y: y - centerY,
+          z: z - centerZ,
           d,
           r: Math.max(2, d * 0.5),
         }));
+        
+        console.log('중심 맞춤 완료! 점 개수:', processedPoints.length);
         setPoints(processedPoints);
       } catch (error) {
         alert('JSON 파일을 읽는데 실패했습니다.');
@@ -319,7 +345,7 @@ const VesselVisualizationPage: React.FC = () => {
 
   useEffect(() => {
     drawAll();
-  }, [drawAll, canvasSizes]);
+  }, [drawAll, canvasSizes, coordinateSystem]);
 
   const selectedList = clickedSet.size === 0 
     ? "선택된 점: 없음" 
@@ -329,7 +355,7 @@ const VesselVisualizationPage: React.FC = () => {
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          🩸 혈관 좌표 3뷰 확인 + 배경 이미지 + 클릭 선택
+          🩸 혈관 좌표 3뷰 확인 ({coordinateSystem} 좌표계) + 배경 이미지 + 클릭 선택
         </h2>
         
         {/* 파일 업로드 */}
@@ -347,6 +373,19 @@ const VesselVisualizationPage: React.FC = () => {
 
         {/* 컨트롤 */}
         <div className="flex flex-wrap gap-4 mb-6">
+          <div className="flex items-center space-x-2">
+            <label className="text-sm font-medium text-gray-700">좌표계:</label>
+            <select
+              value={coordinateSystem}
+              onChange={(e) => setCoordinateSystem(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="RAS">RAS (Right-Anterior-Superior)</option>
+              <option value="LPS">LPS (Left-Posterior-Superior)</option>
+              <option value="LPI">LPI (Left-Posterior-Inferior)</option>
+            </select>
+          </div>
+
           <div className="flex items-center space-x-2">
             <label className="text-sm font-medium text-gray-700">번호 검색:</label>
             <input
@@ -391,7 +430,7 @@ const VesselVisualizationPage: React.FC = () => {
           <div className="flex justify-center">
             <div className="text-center">
               <p className="text-2xl font-bold text-gray-800 mb-4">
-                🔍 XZ View (Y제거) - 메인 뷰
+                🔍 XZ View (전후축 제거) - {coordinateSystem} 메인 뷰: 좌우/위아래
               </p>
               <canvas
                 ref={canvasXZRef}
@@ -418,7 +457,7 @@ const VesselVisualizationPage: React.FC = () => {
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 justify-items-center">
             <div className="text-center">
               <p className="text-lg font-semibold text-gray-700 mb-3">
-                XY View (Z제거)
+                XY View (위아래축 제거) - {coordinateSystem} Axial: 좌우/전후
               </p>
               <canvas
                 ref={canvasXYRef}
@@ -442,7 +481,7 @@ const VesselVisualizationPage: React.FC = () => {
 
             <div className="text-center">
               <p className="text-lg font-semibold text-gray-700 mb-3">
-                YZ View (X제거)
+                YZ View (좌우축 제거) - {coordinateSystem}: 전후/위아래
               </p>
               <canvas
                 ref={canvasYZRef}
@@ -466,8 +505,36 @@ const VesselVisualizationPage: React.FC = () => {
           </div>
         </div>
 
+        {/* 좌표계 정보 */}
+        <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+          <h4 className="text-sm font-semibold text-blue-900 mb-2">현재 좌표계: {coordinateSystem}</h4>
+          <div className="text-sm text-blue-800">
+            {coordinateSystem === 'RAS' && (
+              <div>
+                <p>• <strong>R (Right)</strong>: X축 양의 방향 = 환자의 오른쪽</p>
+                <p>• <strong>A (Anterior)</strong>: Y축 양의 방향 = 환자의 전방</p>
+                <p>• <strong>S (Superior)</strong>: Z축 양의 방향 = 환자의 위쪽</p>
+              </div>
+            )}
+            {coordinateSystem === 'LPS' && (
+              <div>
+                <p>• <strong>L (Left)</strong>: X축 양의 방향 = 환자의 왼쪽</p>
+                <p>• <strong>P (Posterior)</strong>: Y축 양의 방향 = 환자의 후방</p>
+                <p>• <strong>S (Superior)</strong>: Z축 양의 방향 = 환자의 위쪽</p>
+              </div>
+            )}
+            {coordinateSystem === 'LPI' && (
+              <div>
+                <p>• <strong>L (Left)</strong>: X축 양의 방향 = 환자의 왼쪽</p>
+                <p>• <strong>P (Posterior)</strong>: Y축 양의 방향 = 환자의 후방</p>
+                <p>• <strong>I (Inferior)</strong>: Z축 양의 방향 = 환자의 아래쪽</p>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* 선택된 점 표시 */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
           <div className="text-lg font-semibold text-gray-900">
             {selectedList}
           </div>
