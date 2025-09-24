@@ -189,8 +189,8 @@ const VesselVisualizationPage: React.FC = () => {
         clickedSet.has(p.idx);
 
       const baseRadius = useDiameter ? p.r : uniformRadius;
-      const radius = isHighlight ? baseRadius * 1.5 : baseRadius;
-
+      //const radius = isHighlight ? baseRadius * 1.5 : baseRadius;
+      const radius = 1
       const x = p[`screenX_${view}`];
       const y = p[`screenY_${view}`];
 

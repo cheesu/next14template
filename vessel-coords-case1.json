@@ -1,0 +1,180 @@
+{
+  "metadata": {
+    "case_name": "확장된 노드 구조",
+    "description": "기존 skeleton_nodes에 도식도 구현을 위한 추가 정보 포함",
+    "total_nodes": 556,
+    "spacing_mm": {
+      "x": 1.0,
+      "y": 1.0,
+      "z": 1.0
+    },
+    "root_node": "169_75_104",
+    "side_classification": {
+      "left": 45,
+      "right": 44,
+      "center": 467
+    },
+    "diagram_info": {
+      "total_branches": 12,
+      "max_branch_level": 4,
+      "procedure_locations": 8
+    }
+  },
+  "skeleton_nodes": [
+    {
+      "node_id": "22_96_113",
+      "coordinates": {
+        "x_mm": 113.0,
+        "y_mm": 96.0,
+        "z_mm": 22.0,
+        "x_voxel": 113,
+        "y_voxel": 96,
+        "z_voxel": 22
+      },
+      "diameter_mm": 2.0,
+      "radius_voxel": 1.0,
+      "side": "center",
+      "is_aorta": false,
+      "parent_branch_index": 0,
+      "degree": 1,
+      "diagram_properties": {
+        "branch_id": "branch_001",
+        "branch_name": "말단분지_001",
+        "branch_level": 3,
+        "parent_node_id": "23_96_113",
+        "is_branch_start": false,
+        "is_branch_end": true,
+        "is_bifurcation": false,
+        "branch_direction": "terminal",
+        "rendering_priority": 3,
+        "is_critical_path": false,
+        "should_render_in_diagram": false
+      }
+    },
+    {
+      "node_id": "23_96_113",
+      "coordinates": {
+        "x_mm": 113.0,
+        "y_mm": 96.0,
+        "z_mm": 23.0,
+        "x_voxel": 113,
+        "y_voxel": 96,
+        "z_voxel": 23
+      },
+      "diameter_mm": 2.0,
+      "radius_voxel": 1.0,
+      "side": "center",
+      "is_aorta": false,
+      "parent_branch_index": 0,
+      "degree": 2,
+      "diagram_properties": {
+        "branch_id": "branch_001",
+        "branch_name": "말단분지_001",
+        "branch_level": 3,
+        "parent_node_id": "24_96_113",
+        "child_node_ids": ["22_96_113"],
+        "is_branch_start": false,
+        "is_branch_end": false,
+        "is_bifurcation": false,
+        "branch_direction": "straight",
+        "rendering_priority": 3,
+        "is_critical_path": false,
+        "should_render_in_diagram": false
+      }
+    },
+    {
+      "node_id": "169_75_104",
+      "coordinates": {
+        "x_mm": 104.0,
+        "y_mm": 75.0,
+        "z_mm": 169.0,
+        "x_voxel": 104,
+        "y_voxel": 75,
+        "z_voxel": 169
+      },
+      "diameter_mm": 18.0,
+      "radius_voxel": 9.0,
+      "side": "center",
+      "is_aorta": true,
+      "parent_branch_index": -1,
+      "degree": 3,
+      "diagram_properties": {
+        "branch_id": "main_aorta",
+        "branch_name": "주동맥",
+        "branch_level": 0,
+        "parent_node_id": null,
+        "child_node_ids": ["170_75_104", "168_76_105"],
+        "is_branch_start": true,
+        "is_branch_end": false,
+        "is_bifurcation": true,
+        "branch_direction": "root",
+        "rendering_priority": 1,
+        "is_critical_path": true,
+        "should_render_in_diagram": true
+      }
+    },
+    {
+      "node_id": "170_75_104",
+      "coordinates": {
+        "x_mm": 104.0,
+        "y_mm": 75.0,
+        "z_mm": 170.0,
+        "x_voxel": 104,
+        "y_voxel": 75,
+        "z_voxel": 170
+      },
+      "diameter_mm": 16.0,
+      "radius_voxel": 8.0,
+      "side": "center",
+      "is_aorta": false,
+      "parent_branch_index": 1,
+      "degree": 2,
+      "diagram_properties": {
+        "branch_id": "primary_001",
+        "branch_name": "1차분지_001",
+        "branch_level": 1,
+        "parent_node_id": "169_75_104",
+        "child_node_ids": ["171_75_105"],
+        "is_branch_start": true,
+        "is_branch_end": false,
+        "is_bifurcation": false,
+        "branch_direction": "straight",
+        "rendering_priority": 2,
+        "is_critical_path": true,
+        "should_render_in_diagram": true,
+        "bifurcation_angle": 0
+      }
+    }
+  ],
+  "branch_relationships": [
+    {
+      "branch_id": "main_aorta",
+      "parent_branch": null,
+      "child_branches": ["primary_001", "primary_002"],
+      "branch_nodes": ["169_75_104", "168_74_104", "167_73_104"],
+      "bifurcation_point": "169_75_104"
+    },
+    {
+      "branch_id": "primary_001",
+      "parent_branch": "main_aorta",
+      "child_branches": ["secondary_001"],
+      "branch_nodes": ["170_75_104", "171_75_105", "172_76_106"],
+      "bifurcation_point": "172_76_106"
+    }
+  ],
+  "procedure_sites": [
+    {
+      "procedure_id": "proc_001",
+      "procedure_number": 1,
+      "target_node_id": "171_75_105",
+      "target_branch_id": "primary_001",
+      "coordinates": {
+        "x_mm": 105.0,
+        "y_mm": 75.0,
+        "z_mm": 171.0
+      },
+      "description": "1차 분지 중간부 시술",
+      "procedure_type": "stent"
+    }
+  ]
+}

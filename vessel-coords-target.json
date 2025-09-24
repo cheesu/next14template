@@ -1,0 +1,20 @@
+[
+  {
+    "node_id": "24_96_113",
+    "branch_id": "A1",
+    "number": 1,
+    "vessel_classification": 0,
+    "diameter_mm": 2.83,
+    "distance_from_branch_mm": 15.0,
+    "stage": 1
+  },
+  {
+    "node_id": "24_96_113",
+    "branch_id": "Ra1",
+    "number": 2,
+    "vessel_classification": 1,
+    "diameter_mm": 3.46,
+    "distance_from_branch_mm": 3.0,
+    "stage": 2
+  }
+]

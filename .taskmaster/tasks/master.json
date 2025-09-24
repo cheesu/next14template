@@ -1,0 +1,35 @@
+{
+  "3": {
+    "id": "3",
+    "title": "Test Task 1: Basic functionality test",
+    "description": "Testing basic Task Master functionality including creation, listing, and status changes",
+    "status": "pending",
+    "priority": "high",
+    "dependencies": [],
+    "created": "2025-08-14T06:15:00.000Z",
+    "updated": "2025-08-14T06:15:00.000Z",
+    "tags": ["test", "functionality"]
+  },
+  "4": {
+    "id": "4",
+    "title": "Test Task 2: Status management",
+    "description": "Testing status changes from pending to in-progress to completed",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": [],
+    "created": "2025-08-14T06:15:00.000Z",
+    "updated": "2025-08-14T06:15:00.000Z",
+    "tags": ["test", "status"]
+  },
+  "5": {
+    "id": "5",
+    "title": "Test Task 3: Dependency testing",
+    "description": "Testing task dependencies and blocking behavior",
+    "status": "pending",
+    "priority": "medium",
+    "dependencies": ["3", "4"],
+    "created": "2025-08-14T06:15:00.000Z",
+    "updated": "2025-08-14T06:15:00.000Z",
+    "tags": ["test", "dependencies"]
+  }
+}

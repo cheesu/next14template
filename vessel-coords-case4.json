@@ -1,0 +1,151 @@
+{
+  "metadata": {
+    "spacing_mm": {
+      "x": 1.0,
+      "y": 1.0,
+      "z": 1.0
+    },
+    "root_node": "169_75_104"
+  },
+  "branches": [
+    {
+      "branch_id": "A1",
+      "vessel_classification": 0,
+      "side": "center",
+      "order": 0,
+      "is_aorta": true,
+      "length": 15.0,
+      "depth": 0,
+      "start_point": "24_96_113",
+      "end_point": "26_98_114",
+      "parent_branch_id": null,
+      "parent_branch_node_id": null,
+      "children_branch_ids": ["R1", "L1"],
+      "children_branch_node_ids": [
+        { "branch_id": "R1", "node_id": "26_98_114" },
+        { "branch_id": "L1", "node_id": "25_97_114" }
+      ],
+      "nodes": [
+        {
+          "node_id": "24_96_113",
+          "coordinates": { "x": 113, "y": 96, "z": 24 },
+          "diameter_mm": 2.83,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": [1, 2]
+        },
+        {
+          "node_id": "25_97_114",
+          "coordinates": { "x": 114, "y": 97, "z": 25 },
+          "diameter_mm": 4.0,
+          "distance_from_branch_mm": 1.5,
+          "warning_reason": []
+        },
+        {
+          "node_id": "26_98_114",
+          "coordinates": { "x": 114, "y": 98, "z": 26 },
+          "diameter_mm": 6.0,
+          "distance_from_branch_mm": 2.0,
+          "warning_reason": [0]
+        }
+      ]
+    },
+    {
+      "branch_id": "R1",
+      "vessel_classification": 1,
+      "side": "right",
+      "order": 0,
+      "is_aorta": false,
+      "length": 15.0,
+      "start_point": "24_96_113",
+      "end_point": "26_98_114",
+      "depth": 1,
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "26_98_114",
+      "children_branch_ids": ["R1a", "R2a"],
+      "children_branch_node_ids": [
+        { "branch_id": "R1", "node_id": "26_98_114" },
+        { "branch_id": "L1", "node_id": "25_97_114" }
+      ],
+      "nodes": [
+        {
+          "node_id": "79_70_175",
+          "coordinates": { "x": 175, "y": 70, "z": 79 },
+          "diameter_mm": 3.46,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": [0]
+        },
+        {
+          "node_id": "80_70_174",
+          "coordinates": { "x": 174, "y": 70, "z": 80 },
+          "diameter_mm": 2.83,
+          "distance_from_branch_mm": 1.0,
+          "warning_reason": [0]
+        }
+      ]
+    },
+    {
+      "branch_id": "R1a",
+      "vessel_classification": 2,
+      "side": "right",
+      "order": 0,
+      "is_aorta": false,
+      "length": 15.0,
+      "start_point": "24_96_113",
+      "end_point": "26_98_114",
+      "depth": 2,
+      "parent_branch_id": "R1",
+      "parent_branch_node_id": "79_70_175",
+      "children_branch_ids": ["R1a-1"],
+      "children_branch_node_ids": [
+        { "branch_id": "R1a-1", "node_id": "81_70_174" }
+      ],
+      "nodes": [
+        {
+          "node_id": "81_70_174",
+          "coordinates": { "x": 174, "y": 70, "z": 81 },
+          "diameter_mm": 3.46,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "82_70_173",
+          "coordinates": { "x": 173, "y": 70, "z": 82 },
+          "diameter_mm": 2.83,
+          "distance_from_branch_mm": 1.0,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "R1a-1",
+      "vessel_classification": 3,
+      "order": 0,
+      "side": "right",
+      "is_aorta": false,
+      "depth": 3,
+      "parent_branch_id": "R1a",
+      "parent_branch_node_id": "81_70_174",
+      "length": 15.0,
+      "start_point": "24_96_113",
+      "end_point": "26_98_114",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "83_70_173",
+          "coordinates": { "x": 173, "y": 70, "z": 83 },
+          "diameter_mm": 3.46,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": [2]
+        },
+        {
+          "node_id": "84_71_172",
+          "coordinates": { "x": 172, "y": 71, "z": 84 },
+          "diameter_mm": 2.0,
+          "distance_from_branch_mm": 1.0,
+          "warning_reason": [0]
+        }
+      ]
+    }
+  ]
+}

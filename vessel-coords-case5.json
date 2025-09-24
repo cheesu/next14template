@@ -1,0 +1,130 @@
+{
+  "metadata": {
+    "total_branches": 23,
+    "spacing_mm": {
+      "x": 1.0,
+      "y": 1.0,
+      "z": 1.0
+    },
+    "root_node": "169_75_104"
+  },
+  "branches": [
+    {
+      "branch_id": "A1",
+      "vessel_name": "Abdominal Aorta",
+      "side": "center",
+      "is_aorta": true,
+      "length": 15.0,
+      "avg_diameter_mm": 2.83,
+      "start_point": "24_96_113",
+      "end_point": "26_98_114",
+      "depth": 0,
+      "parent": null,
+      "parent_branch_point": null,
+      "children": ["R1", "L1"],
+      "branch_point": [
+        { "branch_id": "R1", "node_id": "26_98_114" },
+        { "branch_id": "L1", "node_id": "25_97_114" }
+      ],
+      "nodes": ["24_96_113", "25_97_114", "26_98_114"]
+    },
+    {
+      "branch_id": "R1",
+      "vessel_name": "Right Renal Artery",
+      "side": "right",
+      "is_aorta": false,
+      "length": 15.0,
+      "avg_diameter_mm": 2.83,
+      "start_point": "24_96_113",
+      "end_point": "26_98_114",
+      "depth": 1,
+      "parent": "A1",
+      "parent_branch_point": {
+        "node_id": "26_98_114"
+      },
+      "children": ["R1a"],
+      "branch_point": [{ "branch_id": "R1a", "node_id": "26_98_114" }],
+      "nodes": ["24_96_113", "25_97_114", "26_98_114"]
+    },
+    {
+      "branch_id": "R1a",
+      "vessel_name": "Segmental Artery",
+      "side": "right",
+      "is_aorta": false,
+      "length": 15.0,
+      "avg_diameter_mm": 2.83,
+      "start_point": "24_96_113",
+      "end_point": "26_98_114",
+      "depth": 2,
+      "parent": "R1",
+      "parent_branch_point": {
+        "node_id": "79_70_175"
+      },
+      "children": ["R1a-1"],
+      "branch_point": [{ "branch_id": "R1a-1", "node_id": "81_70_174" }],
+      "nodes": ["24_96_113", "25_97_114", "26_98_114"]
+    },
+    {
+      "branch_id": "R1a-1",
+      "vessel_name": "Interlobar Artery",
+      "side": "right",
+      "is_aorta": false,
+      "length": 15.0,
+      "avg_diameter_mm": 2.83,
+      "start_point": "24_96_113",
+      "end_point": "26_98_114",
+      "depth": 3,
+      "parent": "R1a",
+      "parent_branch_point": {
+        "node_id": "81_70_174"
+      },
+      "children": [],
+      "branch_point": null,
+      "nodes": ["24_96_113", "25_97_114", "26_98_114"]
+    }
+  ],
+  "nodes": [
+    {
+      "node_id": "24_96_113",
+      "coordinates": { "x": 113, "y": 96, "z": 24 },
+      "parent_branch": "A1",
+      "diameter_mm": 2.83,
+      "distance_from_branch_mm": 0.0
+    },
+    {
+      "node_id": "25_97_114",
+      "coordinates": { "x": 114, "y": 97, "z": 25 },
+      "parent_branch": "A1",
+      "diameter_mm": 4.0,
+      "distance_from_branch_mm": 1.5
+    },
+    {
+      "node_id": "26_98_114",
+      "coordinates": { "x": 114, "y": 98, "z": 26 },
+      "parent_branch": "A1",
+      "diameter_mm": 6.0,
+      "distance_from_branch_mm": 2.0
+    },
+    {
+      "node_id": "24_96_113",
+      "coordinates": { "x": 113, "y": 96, "z": 24 },
+      "parent_branch": "R1",
+      "diameter_mm": 2.83,
+      "distance_from_branch_mm": 0.0
+    },
+    {
+      "node_id": "25_97_114",
+      "coordinates": { "x": 114, "y": 97, "z": 25 },
+      "parent_branch": "R1",
+      "diameter_mm": 4.0,
+      "distance_from_branch_mm": 1.5
+    },
+    {
+      "node_id": "26_98_114",
+      "coordinates": { "x": 114, "y": 98, "z": 26 },
+      "parent_branch": "R1",
+      "diameter_mm": 6.0,
+      "distance_from_branch_mm": 2.0
+    }
+  ]
+}

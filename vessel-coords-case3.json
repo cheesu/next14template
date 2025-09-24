@@ -1,0 +1,228 @@
+{
+  "metadata": {
+    "case_name": "레이어 기반 구조",
+    "description": "원본 데이터 위에 도식도용 레이어를 추가한 구조",
+    "total_nodes": 556,
+    "spacing_mm": {
+      "x": 1.0,
+      "y": 1.0,
+      "z": 1.0
+    },
+    "root_node": "169_75_104",
+    "side_classification": {
+      "left": 45,
+      "right": 44,
+      "center": 467
+    },
+    "processing_info": {
+      "last_processed": "2024-08-26T10:30:00Z",
+      "diagram_version": "1.0",
+      "simplification_applied": true
+    }
+  },
+  "raw_skeleton_nodes": [
+    {
+      "node_id": "22_96_113",
+      "coordinates": {
+        "x_mm": 113.0,
+        "y_mm": 96.0,
+        "z_mm": 22.0,
+        "x_voxel": 113,
+        "y_voxel": 96,
+        "z_voxel": 22
+      },
+      "diameter_mm": 2.0,
+      "radius_voxel": 1.0,
+      "side": "center",
+      "is_aorta": false,
+      "parent_branch_index": 0,
+      "degree": 1
+    },
+    {
+      "node_id": "169_75_104",
+      "coordinates": {
+        "x_mm": 104.0,
+        "y_mm": 75.0,
+        "z_mm": 169.0,
+        "x_voxel": 104,
+        "y_voxel": 75,
+        "z_voxel": 169
+      },
+      "diameter_mm": 18.0,
+      "radius_voxel": 9.0,
+      "side": "center",
+      "is_aorta": true,
+      "parent_branch_index": -1,
+      "degree": 3
+    }
+  ],
+  "diagram_layers": {
+    "layer_main_structure": {
+      "layer_name": "주요 구조 레이어",
+      "layer_type": "main_vessels",
+      "priority": 1,
+      "elements": [
+        {
+          "element_id": "main_trunk",
+          "element_type": "vessel_segment",
+          "source_nodes": ["169_75_104", "168_74_104", "167_73_104"],
+          "simplified_geometry": {
+            "start_point": { "x": 104.0, "y": 75.0, "z": 169.0 },
+            "end_point": { "x": 104.0, "y": 73.0, "z": 167.0 },
+            "control_points": [
+              { "x": 104.0, "y": 74.5, "z": 168.5, "diameter": 17.5 }
+            ],
+            "rendering_length": 45.0,
+            "rendering_angle": 270,
+            "rendering_diameter": 18.0
+          },
+          "properties": {
+            "is_main_artery": true,
+            "branch_level": 0,
+            "rendering_priority": 1,
+            "color": "#FF4444"
+          }
+        },
+        {
+          "element_id": "primary_branch_001",
+          "element_type": "vessel_segment",
+          "source_nodes": ["170_75_104", "171_75_105", "172_76_106"],
+          "simplified_geometry": {
+            "start_point": { "x": 104.0, "y": 75.0, "z": 170.0 },
+            "end_point": { "x": 106.0, "y": 76.0, "z": 172.0 },
+            "control_points": [
+              { "x": 105.0, "y": 75.5, "z": 171.0, "diameter": 15.0 }
+            ],
+            "rendering_length": 35.0,
+            "rendering_angle": 30,
+            "rendering_diameter": 16.0
+          },
+          "properties": {
+            "is_main_artery": false,
+            "branch_level": 1,
+            "rendering_priority": 2,
+            "color": "#4488FF"
+          },
+          "connection_info": {
+            "connects_to": "main_trunk",
+            "connection_point": { "x": 104.0, "y": 75.0, "z": 169.0 },
+            "branch_angle": 30.0
+          }
+        }
+      ]
+    },
+    "layer_procedure_sites": {
+      "layer_name": "시술 부위 레이어",
+      "layer_type": "procedures",
+      "priority": 3,
+      "elements": [
+        {
+          "element_id": "proc_marker_001",
+          "element_type": "procedure_marker",
+          "source_node": "171_75_105",
+          "procedure_info": {
+            "procedure_number": 1,
+            "procedure_type": "stent",
+            "target_vessel": "primary_branch_001"
+          },
+          "rendering_position": {
+            "x": 105.0,
+            "y": 75.0,
+            "z": 171.0,
+            "relative_position_on_vessel": 0.47
+          },
+          "marker_style": {
+            "marker_type": "cut_line",
+            "color": "#FF0000",
+            "size": 3.0,
+            "label": "1"
+          }
+        },
+        {
+          "element_id": "proc_marker_002",
+          "element_type": "procedure_marker",
+          "source_node": "172_76_106",
+          "procedure_info": {
+            "procedure_number": 2,
+            "procedure_type": "balloon",
+            "target_vessel": "primary_branch_001"
+          },
+          "rendering_position": {
+            "x": 106.0,
+            "y": 76.0,
+            "z": 172.0,
+            "relative_position_on_vessel": 0.8
+          },
+          "marker_style": {
+            "marker_type": "cut_line",
+            "color": "#FF0000",
+            "size": 3.0,
+            "label": "2"
+          }
+        }
+      ]
+    },
+    "layer_branch_points": {
+      "layer_name": "분기점 레이어",
+      "layer_type": "bifurcations",
+      "priority": 2,
+      "elements": [
+        {
+          "element_id": "bifurcation_001",
+          "element_type": "bifurcation_point",
+          "source_node": "169_75_104",
+          "bifurcation_info": {
+            "parent_vessel": "main_trunk",
+            "child_vessels": ["primary_branch_001", "primary_branch_002"],
+            "bifurcation_type": "T-junction"
+          },
+          "rendering_position": {
+            "x": 104.0,
+            "y": 75.0,
+            "z": 169.0
+          },
+          "marker_style": {
+            "show_marker": true,
+            "marker_size": 2.0,
+            "color": "#888888"
+          }
+        }
+      ]
+    }
+  },
+  "processing_rules": {
+    "node_filtering": {
+      "min_diameter_threshold": 3.0,
+      "max_branch_level": 3,
+      "exclude_terminal_branches_shorter_than": 15.0
+    },
+    "geometry_simplification": {
+      "enable_douglas_peucker": true,
+      "tolerance": 2.0,
+      "preserve_bifurcations": true,
+      "preserve_procedure_sites": true
+    },
+    "rendering_optimization": {
+      "merge_collinear_segments": true,
+      "angle_threshold": 5.0,
+      "min_segment_length": 10.0
+    }
+  },
+  "node_to_element_mapping": {
+    "169_75_104": {
+      "diagram_elements": ["main_trunk", "bifurcation_001"],
+      "is_critical": true,
+      "rendering_role": "bifurcation_point"
+    },
+    "171_75_105": {
+      "diagram_elements": ["primary_branch_001", "proc_marker_001"],
+      "is_critical": true,
+      "rendering_role": "procedure_site"
+    },
+    "22_96_113": {
+      "diagram_elements": [],
+      "is_critical": false,
+      "rendering_role": "excluded"
+    }
+  }
+}
