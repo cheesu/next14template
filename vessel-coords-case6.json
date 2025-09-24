@@ -1,0 +1,1289 @@
+{
+  "metadata": {
+    "spacing_mm": { "x": 1.0, "y": 1.0, "z": 1.0 },
+    "root_node": "113_78_115"
+  },
+  "branches": [
+    {
+      "branch_id": "A1",
+      "vessel_classification": 0,
+      "side": "center",
+      "order": 0,
+      "is_aorta": true,
+      "length": 120.0,
+      "depth": 0,
+      "start_point": "60_78_50",
+      "end_point": "170_78_170",
+      "parent_branch_id": null,
+      "parent_branch_node_id": null,
+      "children_branch_ids": ["L1", "R1", "ACC1"],
+      "children_branch_node_ids": [
+        { "branch_id": "L1", "node_id": "130_78_120" },
+        { "branch_id": "R1", "node_id": "130_78_120" },
+        { "branch_id": "ACC1", "node_id": "100_78_90" }
+      ],
+      "nodes": [
+        {
+          "node_id": "60_78_50",
+          "coordinates": { "x": 60, "y": 78, "z": 50 },
+          "diameter_mm": 19.5,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "70_78_60",
+          "coordinates": { "x": 70, "y": 78, "z": 60 },
+          "diameter_mm": 18.2,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "80_78_70",
+          "coordinates": { "x": 80, "y": 78, "z": 70 },
+          "diameter_mm": 16.8,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "90_78_80",
+          "coordinates": { "x": 90, "y": 78, "z": 80 },
+          "diameter_mm": 15.5,
+          "distance_from_branch_mm": 42.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "100_78_90",
+          "coordinates": { "x": 100, "y": 78, "z": 90 },
+          "diameter_mm": 14.2,
+          "distance_from_branch_mm": 56.6,
+          "warning_reason": []
+        },
+        {
+          "node_id": "110_78_100",
+          "coordinates": { "x": 110, "y": 78, "z": 100 },
+          "diameter_mm": 12.8,
+          "distance_from_branch_mm": 70.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "120_78_110",
+          "coordinates": { "x": 120, "y": 78, "z": 110 },
+          "diameter_mm": 11.5,
+          "distance_from_branch_mm": 84.9,
+          "warning_reason": []
+        },
+        {
+          "node_id": "130_78_120",
+          "coordinates": { "x": 130, "y": 78, "z": 120 },
+          "diameter_mm": 10.2,
+          "distance_from_branch_mm": 99.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "140_78_130",
+          "coordinates": { "x": 140, "y": 78, "z": 130 },
+          "diameter_mm": 8.8,
+          "distance_from_branch_mm": 113.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "150_78_140",
+          "coordinates": { "x": 150, "y": 78, "z": 140 },
+          "diameter_mm": 7.5,
+          "distance_from_branch_mm": 127.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "160_78_150",
+          "coordinates": { "x": 160, "y": 78, "z": 150 },
+          "diameter_mm": 6.2,
+          "distance_from_branch_mm": 141.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "170_78_160",
+          "coordinates": { "x": 170, "y": 78, "z": 160 },
+          "diameter_mm": 5.0,
+          "distance_from_branch_mm": 155.6,
+          "warning_reason": []
+        },
+        {
+          "node_id": "170_78_170",
+          "coordinates": { "x": 170, "y": 78, "z": 170 },
+          "diameter_mm": 4.2,
+          "distance_from_branch_mm": 169.7,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "L1",
+      "vessel_classification": 1,
+      "side": "left",
+      "order": 0,
+      "is_aorta": false,
+      "length": 80.0,
+      "depth": 1,
+      "start_point": "130_78_120",
+      "end_point": "170_50_200",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "130_78_120",
+      "children_branch_ids": ["L1a", "L1b"],
+      "children_branch_node_ids": [
+        { "branch_id": "L1a", "node_id": "150_65_160" },
+        { "branch_id": "L1b", "node_id": "160_58_180" }
+      ],
+      "nodes": [
+        {
+          "node_id": "130_78_120",
+          "coordinates": { "x": 130, "y": 78, "z": 120 },
+          "diameter_mm": 10.2,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "135_75_130",
+          "coordinates": { "x": 135, "y": 75, "z": 130 },
+          "diameter_mm": 9.1,
+          "distance_from_branch_mm": 11.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "140_72_140",
+          "coordinates": { "x": 140, "y": 72, "z": 140 },
+          "diameter_mm": 8.0,
+          "distance_from_branch_mm": 22.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "145_68_150",
+          "coordinates": { "x": 145, "y": 68, "z": 150 },
+          "diameter_mm": 6.9,
+          "distance_from_branch_mm": 33.5,
+          "warning_reason": []
+        },
+        {
+          "node_id": "150_65_160",
+          "coordinates": { "x": 150, "y": 65, "z": 160 },
+          "diameter_mm": 5.8,
+          "distance_from_branch_mm": 44.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "155_62_170",
+          "coordinates": { "x": 155, "y": 62, "z": 170 },
+          "diameter_mm": 4.7,
+          "distance_from_branch_mm": 55.9,
+          "warning_reason": []
+        },
+        {
+          "node_id": "160_58_180",
+          "coordinates": { "x": 160, "y": 58, "z": 180 },
+          "diameter_mm": 3.6,
+          "distance_from_branch_mm": 67.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "165_55_190",
+          "coordinates": { "x": 165, "y": 55, "z": 190 },
+          "diameter_mm": 2.8,
+          "distance_from_branch_mm": 78.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "170_50_200",
+          "coordinates": { "x": 170, "y": 50, "z": 200 },
+          "diameter_mm": 2.2,
+          "distance_from_branch_mm": 89.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "R1",
+      "vessel_classification": 1,
+      "side": "right",
+      "order": 0,
+      "is_aorta": false,
+      "length": 80.0,
+      "depth": 1,
+      "start_point": "130_78_120",
+      "end_point": "170_96_200",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "130_78_120",
+      "children_branch_ids": ["R1a", "R1b"],
+      "children_branch_node_ids": [
+        { "branch_id": "R1a", "node_id": "150_88_160" },
+        { "branch_id": "R1b", "node_id": "160_92_180" }
+      ],
+      "nodes": [
+        {
+          "node_id": "130_78_120",
+          "coordinates": { "x": 130, "y": 78, "z": 120 },
+          "diameter_mm": 10.2,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "135_82_130",
+          "coordinates": { "x": 135, "y": 82, "z": 130 },
+          "diameter_mm": 9.1,
+          "distance_from_branch_mm": 11.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "140_85_140",
+          "coordinates": { "x": 140, "y": 85, "z": 140 },
+          "diameter_mm": 8.0,
+          "distance_from_branch_mm": 22.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "145_88_150",
+          "coordinates": { "x": 145, "y": 88, "z": 150 },
+          "diameter_mm": 6.9,
+          "distance_from_branch_mm": 33.5,
+          "warning_reason": []
+        },
+        {
+          "node_id": "150_90_160",
+          "coordinates": { "x": 150, "y": 90, "z": 160 },
+          "diameter_mm": 5.8,
+          "distance_from_branch_mm": 44.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "155_92_170",
+          "coordinates": { "x": 155, "y": 92, "z": 170 },
+          "diameter_mm": 4.7,
+          "distance_from_branch_mm": 55.9,
+          "warning_reason": []
+        },
+        {
+          "node_id": "160_94_180",
+          "coordinates": { "x": 160, "y": 94, "z": 180 },
+          "diameter_mm": 3.6,
+          "distance_from_branch_mm": 67.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "165_95_190",
+          "coordinates": { "x": 165, "y": 95, "z": 190 },
+          "diameter_mm": 2.8,
+          "distance_from_branch_mm": 78.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "170_96_200",
+          "coordinates": { "x": 170, "y": 96, "z": 200 },
+          "diameter_mm": 2.2,
+          "distance_from_branch_mm": 89.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "ACC1",
+      "vessel_classification": 2,
+      "side": "center",
+      "order": 0,
+      "is_aorta": false,
+      "length": 60.0,
+      "depth": 1,
+      "start_point": "100_78_90",
+      "end_point": "140_78_30",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "100_78_90",
+      "children_branch_ids": ["ACC1a"],
+      "children_branch_node_ids": [
+        { "branch_id": "ACC1a", "node_id": "120_78_60" }
+      ],
+      "nodes": [
+        {
+          "node_id": "100_78_90",
+          "coordinates": { "x": 100, "y": 78, "z": 90 },
+          "diameter_mm": 14.2,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "105_78_80",
+          "coordinates": { "x": 105, "y": 78, "z": 80 },
+          "diameter_mm": 12.8,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "110_78_70",
+          "coordinates": { "x": 110, "y": 78, "z": 70 },
+          "diameter_mm": 11.4,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "115_78_60",
+          "coordinates": { "x": 115, "y": 78, "z": 60 },
+          "diameter_mm": 10.0,
+          "distance_from_branch_mm": 42.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "120_78_50",
+          "coordinates": { "x": 120, "y": 78, "z": 50 },
+          "diameter_mm": 8.6,
+          "distance_from_branch_mm": 56.6,
+          "warning_reason": []
+        },
+        {
+          "node_id": "125_78_40",
+          "coordinates": { "x": 125, "y": 78, "z": 40 },
+          "diameter_mm": 7.2,
+          "distance_from_branch_mm": 70.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "130_78_35",
+          "coordinates": { "x": 130, "y": 78, "z": 35 },
+          "diameter_mm": 5.8,
+          "distance_from_branch_mm": 84.9,
+          "warning_reason": []
+        },
+        {
+          "node_id": "135_78_32",
+          "coordinates": { "x": 135, "y": 78, "z": 32 },
+          "diameter_mm": 4.4,
+          "distance_from_branch_mm": 99.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "140_78_30",
+          "coordinates": { "x": 140, "y": 78, "z": 30 },
+          "diameter_mm": 3.0,
+          "distance_from_branch_mm": 113.1,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "L1a",
+      "vessel_classification": 2,
+      "side": "left",
+      "order": 1,
+      "is_aorta": false,
+      "length": 50.0,
+      "depth": 2,
+      "start_point": "150_65_160",
+      "end_point": "175_45_190",
+      "parent_branch_id": "L1",
+      "parent_branch_node_id": "150_65_160",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "150_65_160",
+          "coordinates": { "x": 150, "y": 65, "z": 160 },
+          "diameter_mm": 5.8,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "155_62_165",
+          "coordinates": { "x": 155, "y": 62, "z": 165 },
+          "diameter_mm": 5.0,
+          "distance_from_branch_mm": 7.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "160_58_170",
+          "coordinates": { "x": 160, "y": 58, "z": 170 },
+          "diameter_mm": 4.2,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "165_55_175",
+          "coordinates": { "x": 165, "y": 55, "z": 175 },
+          "diameter_mm": 3.4,
+          "distance_from_branch_mm": 21.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "170_50_180",
+          "coordinates": { "x": 170, "y": 50, "z": 180 },
+          "diameter_mm": 2.6,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_47_185",
+          "coordinates": { "x": 175, "y": 47, "z": 185 },
+          "diameter_mm": 2.0,
+          "distance_from_branch_mm": 35.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_45_190",
+          "coordinates": { "x": 175, "y": 45, "z": 190 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 42.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "L1b",
+      "vessel_classification": 2,
+      "side": "left",
+      "order": 1,
+      "is_aorta": false,
+      "length": 40.0,
+      "depth": 2,
+      "start_point": "160_58_180",
+      "end_point": "175_43_205",
+      "parent_branch_id": "L1",
+      "parent_branch_node_id": "160_58_180",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "160_58_180",
+          "coordinates": { "x": 160, "y": 58, "z": 180 },
+          "diameter_mm": 3.6,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "163_55_185",
+          "coordinates": { "x": 163, "y": 55, "z": 185 },
+          "diameter_mm": 3.0,
+          "distance_from_branch_mm": 7.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "166_52_190",
+          "coordinates": { "x": 166, "y": 52, "z": 190 },
+          "diameter_mm": 2.4,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "169_48_195",
+          "coordinates": { "x": 169, "y": 48, "z": 195 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 21.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "172_45_200",
+          "coordinates": { "x": 172, "y": 45, "z": 200 },
+          "diameter_mm": 1.4,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_43_205",
+          "coordinates": { "x": 175, "y": 43, "z": 205 },
+          "diameter_mm": 1.2,
+          "distance_from_branch_mm": 35.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "R1a",
+      "vessel_classification": 2,
+      "side": "right",
+      "order": 1,
+      "is_aorta": false,
+      "length": 50.0,
+      "depth": 2,
+      "start_point": "150_90_160",
+      "end_point": "175_98_190",
+      "parent_branch_id": "R1",
+      "parent_branch_node_id": "150_90_160",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "150_90_160",
+          "coordinates": { "x": 150, "y": 90, "z": 160 },
+          "diameter_mm": 5.8,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "155_92_165",
+          "coordinates": { "x": 155, "y": 92, "z": 165 },
+          "diameter_mm": 5.0,
+          "distance_from_branch_mm": 7.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "160_94_170",
+          "coordinates": { "x": 160, "y": 94, "z": 170 },
+          "diameter_mm": 4.2,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "165_96_175",
+          "coordinates": { "x": 165, "y": 96, "z": 175 },
+          "diameter_mm": 3.4,
+          "distance_from_branch_mm": 21.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "170_97_180",
+          "coordinates": { "x": 170, "y": 97, "z": 180 },
+          "diameter_mm": 2.6,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_98_185",
+          "coordinates": { "x": 175, "y": 98, "z": 185 },
+          "diameter_mm": 2.0,
+          "distance_from_branch_mm": 35.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_98_190",
+          "coordinates": { "x": 175, "y": 98, "z": 190 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 42.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "R1b",
+      "vessel_classification": 2,
+      "side": "right",
+      "order": 1,
+      "is_aorta": false,
+      "length": 40.0,
+      "depth": 2,
+      "start_point": "160_94_180",
+      "end_point": "175_99_205",
+      "parent_branch_id": "R1",
+      "parent_branch_node_id": "160_94_180",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "160_94_180",
+          "coordinates": { "x": 160, "y": 94, "z": 180 },
+          "diameter_mm": 3.6,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "163_95_185",
+          "coordinates": { "x": 163, "y": 95, "z": 185 },
+          "diameter_mm": 3.0,
+          "distance_from_branch_mm": 7.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "166_96_190",
+          "coordinates": { "x": 166, "y": 96, "z": 190 },
+          "diameter_mm": 2.4,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "169_97_195",
+          "coordinates": { "x": 169, "y": 97, "z": 195 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 21.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "172_98_200",
+          "coordinates": { "x": 172, "y": 98, "z": 200 },
+          "diameter_mm": 1.4,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_99_205",
+          "coordinates": { "x": 175, "y": 99, "z": 205 },
+          "diameter_mm": 1.2,
+          "distance_from_branch_mm": 35.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "ACC1a",
+      "vessel_classification": 3,
+      "side": "center",
+      "order": 1,
+      "is_aorta": false,
+      "length": 35.0,
+      "depth": 2,
+      "start_point": "120_78_50",
+      "end_point": "155_78_22",
+      "parent_branch_id": "ACC1",
+      "parent_branch_node_id": "120_78_50",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "120_78_50",
+          "coordinates": { "x": 120, "y": 78, "z": 50 },
+          "diameter_mm": 8.6,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "125_78_45",
+          "coordinates": { "x": 125, "y": 78, "z": 45 },
+          "diameter_mm": 7.2,
+          "distance_from_branch_mm": 7.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "130_78_40",
+          "coordinates": { "x": 130, "y": 78, "z": 40 },
+          "diameter_mm": 5.8,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "135_78_35",
+          "coordinates": { "x": 135, "y": 78, "z": 35 },
+          "diameter_mm": 4.4,
+          "distance_from_branch_mm": 21.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "140_78_30",
+          "coordinates": { "x": 140, "y": 78, "z": 30 },
+          "diameter_mm": 3.0,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "145_78_26",
+          "coordinates": { "x": 145, "y": 78, "z": 26 },
+          "diameter_mm": 2.2,
+          "distance_from_branch_mm": 35.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "150_78_24",
+          "coordinates": { "x": 150, "y": 78, "z": 24 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 42.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "155_78_22",
+          "coordinates": { "x": 155, "y": 78, "z": 22 },
+          "diameter_mm": 1.4,
+          "distance_from_branch_mm": 49.5,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "L2",
+      "vessel_classification": 1,
+      "side": "left",
+      "order": 0,
+      "is_aorta": false,
+      "length": 70.0,
+      "depth": 1,
+      "start_point": "80_78_70",
+      "end_point": "120_45_140",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "80_78_70",
+      "children_branch_ids": ["L2a"],
+      "children_branch_node_ids": [
+        { "branch_id": "L2a", "node_id": "100_62_105" }
+      ],
+      "nodes": [
+        {
+          "node_id": "80_78_70",
+          "coordinates": { "x": 80, "y": 78, "z": 70 },
+          "diameter_mm": 16.8,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "85_75_80",
+          "coordinates": { "x": 85, "y": 75, "z": 80 },
+          "diameter_mm": 14.5,
+          "distance_from_branch_mm": 11.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "90_72_90",
+          "coordinates": { "x": 90, "y": 72, "z": 90 },
+          "diameter_mm": 12.2,
+          "distance_from_branch_mm": 22.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "95_68_100",
+          "coordinates": { "x": 95, "y": 68, "z": 100 },
+          "diameter_mm": 9.8,
+          "distance_from_branch_mm": 33.5,
+          "warning_reason": []
+        },
+        {
+          "node_id": "100_65_110",
+          "coordinates": { "x": 100, "y": 65, "z": 110 },
+          "diameter_mm": 7.5,
+          "distance_from_branch_mm": 44.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "105_60_120",
+          "coordinates": { "x": 105, "y": 60, "z": 120 },
+          "diameter_mm": 5.2,
+          "distance_from_branch_mm": 55.9,
+          "warning_reason": []
+        },
+        {
+          "node_id": "110_55_130",
+          "coordinates": { "x": 110, "y": 55, "z": 130 },
+          "diameter_mm": 3.8,
+          "distance_from_branch_mm": 67.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "115_50_135",
+          "coordinates": { "x": 115, "y": 50, "z": 135 },
+          "diameter_mm": 2.4,
+          "distance_from_branch_mm": 78.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "120_45_140",
+          "coordinates": { "x": 120, "y": 45, "z": 140 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 89.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "R2",
+      "vessel_classification": 1,
+      "side": "right",
+      "order": 0,
+      "is_aorta": false,
+      "length": 70.0,
+      "depth": 1,
+      "start_point": "80_78_70",
+      "end_point": "120_98_140",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "80_78_70",
+      "children_branch_ids": ["R2a"],
+      "children_branch_node_ids": [
+        { "branch_id": "R2a", "node_id": "100_85_105" }
+      ],
+      "nodes": [
+        {
+          "node_id": "80_78_70",
+          "coordinates": { "x": 80, "y": 78, "z": 70 },
+          "diameter_mm": 16.8,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "85_82_80",
+          "coordinates": { "x": 85, "y": 82, "z": 80 },
+          "diameter_mm": 14.5,
+          "distance_from_branch_mm": 11.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "90_85_90",
+          "coordinates": { "x": 90, "y": 85, "z": 90 },
+          "diameter_mm": 12.2,
+          "distance_from_branch_mm": 22.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "95_88_100",
+          "coordinates": { "x": 95, "y": 88, "z": 100 },
+          "diameter_mm": 9.8,
+          "distance_from_branch_mm": 33.5,
+          "warning_reason": []
+        },
+        {
+          "node_id": "100_90_110",
+          "coordinates": { "x": 100, "y": 90, "z": 110 },
+          "diameter_mm": 7.5,
+          "distance_from_branch_mm": 44.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "105_92_120",
+          "coordinates": { "x": 105, "y": 92, "z": 120 },
+          "diameter_mm": 5.2,
+          "distance_from_branch_mm": 55.9,
+          "warning_reason": []
+        },
+        {
+          "node_id": "110_95_130",
+          "coordinates": { "x": 110, "y": 95, "z": 130 },
+          "diameter_mm": 3.8,
+          "distance_from_branch_mm": 67.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "115_97_135",
+          "coordinates": { "x": 115, "y": 97, "z": 135 },
+          "diameter_mm": 2.4,
+          "distance_from_branch_mm": 78.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "120_98_140",
+          "coordinates": { "x": 120, "y": 98, "z": 140 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 89.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "L2a",
+      "vessel_classification": 2,
+      "side": "left",
+      "order": 1,
+      "is_aorta": false,
+      "length": 30.0,
+      "depth": 2,
+      "start_point": "100_65_110",
+      "end_point": "125_48_130",
+      "parent_branch_id": "L2",
+      "parent_branch_node_id": "100_65_110",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "100_65_110",
+          "coordinates": { "x": 100, "y": 65, "z": 110 },
+          "diameter_mm": 7.5,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "105_62_115",
+          "coordinates": { "x": 105, "y": 62, "z": 115 },
+          "diameter_mm": 6.2,
+          "distance_from_branch_mm": 7.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "110_58_120",
+          "coordinates": { "x": 110, "y": 58, "z": 120 },
+          "diameter_mm": 4.8,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "115_55_125",
+          "coordinates": { "x": 115, "y": 55, "z": 125 },
+          "diameter_mm": 3.5,
+          "distance_from_branch_mm": 21.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "120_50_128",
+          "coordinates": { "x": 120, "y": 50, "z": 128 },
+          "diameter_mm": 2.2,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "125_48_130",
+          "coordinates": { "x": 125, "y": 48, "z": 130 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 35.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "R2a",
+      "vessel_classification": 2,
+      "side": "right",
+      "order": 1,
+      "is_aorta": false,
+      "length": 30.0,
+      "depth": 2,
+      "start_point": "100_90_110",
+      "end_point": "125_95_130",
+      "parent_branch_id": "R2",
+      "parent_branch_node_id": "100_90_110",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "100_90_110",
+          "coordinates": { "x": 100, "y": 90, "z": 110 },
+          "diameter_mm": 7.5,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "105_92_115",
+          "coordinates": { "x": 105, "y": 92, "z": 115 },
+          "diameter_mm": 6.2,
+          "distance_from_branch_mm": 7.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "110_94_120",
+          "coordinates": { "x": 110, "y": 94, "z": 120 },
+          "diameter_mm": 4.8,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "115_96_125",
+          "coordinates": { "x": 115, "y": 96, "z": 125 },
+          "diameter_mm": 3.5,
+          "distance_from_branch_mm": 21.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "120_98_128",
+          "coordinates": { "x": 120, "y": 98, "z": 128 },
+          "diameter_mm": 2.2,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "125_95_130",
+          "coordinates": { "x": 125, "y": 95, "z": 130 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 35.4,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "L3",
+      "vessel_classification": 1,
+      "side": "left",
+      "order": 0,
+      "is_aorta": false,
+      "length": 60.0,
+      "depth": 1,
+      "start_point": "140_78_130",
+      "end_point": "170_60_180",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "140_78_130",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "140_78_130",
+          "coordinates": { "x": 140, "y": 78, "z": 130 },
+          "diameter_mm": 8.8,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "145_75_140",
+          "coordinates": { "x": 145, "y": 75, "z": 140 },
+          "diameter_mm": 7.5,
+          "distance_from_branch_mm": 11.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "150_72_150",
+          "coordinates": { "x": 150, "y": 72, "z": 150 },
+          "diameter_mm": 6.2,
+          "distance_from_branch_mm": 22.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "155_68_160",
+          "coordinates": { "x": 155, "y": 68, "z": 160 },
+          "diameter_mm": 4.8,
+          "distance_from_branch_mm": 33.5,
+          "warning_reason": []
+        },
+        {
+          "node_id": "160_65_170",
+          "coordinates": { "x": 160, "y": 65, "z": 170 },
+          "diameter_mm": 3.5,
+          "distance_from_branch_mm": 44.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "165_62_175",
+          "coordinates": { "x": 165, "y": 62, "z": 175 },
+          "diameter_mm": 2.8,
+          "distance_from_branch_mm": 55.9,
+          "warning_reason": []
+        },
+        {
+          "node_id": "170_60_180",
+          "coordinates": { "x": 170, "y": 60, "z": 180 },
+          "diameter_mm": 2.0,
+          "distance_from_branch_mm": 67.1,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "R3",
+      "vessel_classification": 1,
+      "side": "right",
+      "order": 0,
+      "is_aorta": false,
+      "length": 60.0,
+      "depth": 1,
+      "start_point": "140_78_130",
+      "end_point": "170_95_180",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "140_78_130",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "140_78_130",
+          "coordinates": { "x": 140, "y": 78, "z": 130 },
+          "diameter_mm": 8.8,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "145_82_140",
+          "coordinates": { "x": 145, "y": 82, "z": 140 },
+          "diameter_mm": 7.5,
+          "distance_from_branch_mm": 11.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "150_85_150",
+          "coordinates": { "x": 150, "y": 85, "z": 150 },
+          "diameter_mm": 6.2,
+          "distance_from_branch_mm": 22.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "155_88_160",
+          "coordinates": { "x": 155, "y": 88, "z": 160 },
+          "diameter_mm": 4.8,
+          "distance_from_branch_mm": 33.5,
+          "warning_reason": []
+        },
+        {
+          "node_id": "160_90_170",
+          "coordinates": { "x": 160, "y": 90, "z": 170 },
+          "diameter_mm": 3.5,
+          "distance_from_branch_mm": 44.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "165_92_175",
+          "coordinates": { "x": 165, "y": 92, "z": 175 },
+          "diameter_mm": 2.8,
+          "distance_from_branch_mm": 55.9,
+          "warning_reason": []
+        },
+        {
+          "node_id": "170_95_180",
+          "coordinates": { "x": 170, "y": 95, "z": 180 },
+          "diameter_mm": 2.0,
+          "distance_from_branch_mm": 67.1,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "ACC2",
+      "vessel_classification": 2,
+      "side": "center",
+      "order": 0,
+      "is_aorta": false,
+      "length": 45.0,
+      "depth": 1,
+      "start_point": "150_78_140",
+      "end_point": "175_78_185",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "150_78_140",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "150_78_140",
+          "coordinates": { "x": 150, "y": 78, "z": 140 },
+          "diameter_mm": 7.5,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "155_78_150",
+          "coordinates": { "x": 155, "y": 78, "z": 150 },
+          "diameter_mm": 6.2,
+          "distance_from_branch_mm": 14.1,
+          "warning_reason": []
+        },
+        {
+          "node_id": "160_78_160",
+          "coordinates": { "x": 160, "y": 78, "z": 160 },
+          "diameter_mm": 4.8,
+          "distance_from_branch_mm": 28.3,
+          "warning_reason": []
+        },
+        {
+          "node_id": "165_78_170",
+          "coordinates": { "x": 165, "y": 78, "z": 170 },
+          "diameter_mm": 3.5,
+          "distance_from_branch_mm": 42.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "170_78_175",
+          "coordinates": { "x": 170, "y": 78, "z": 175 },
+          "diameter_mm": 2.8,
+          "distance_from_branch_mm": 56.6,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_78_180",
+          "coordinates": { "x": 175, "y": 78, "z": 180 },
+          "diameter_mm": 2.2,
+          "distance_from_branch_mm": 70.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_78_185",
+          "coordinates": { "x": 175, "y": 78, "z": 185 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 84.9,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "L4",
+      "vessel_classification": 1,
+      "side": "left",
+      "order": 0,
+      "is_aorta": false,
+      "length": 40.0,
+      "depth": 1,
+      "start_point": "160_78_150",
+      "end_point": "175_65_190",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "160_78_150",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "160_78_150",
+          "coordinates": { "x": 160, "y": 78, "z": 150 },
+          "diameter_mm": 6.2,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "163_75_160",
+          "coordinates": { "x": 163, "y": 75, "z": 160 },
+          "diameter_mm": 5.0,
+          "distance_from_branch_mm": 11.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "166_72_170",
+          "coordinates": { "x": 166, "y": 72, "z": 170 },
+          "diameter_mm": 3.8,
+          "distance_from_branch_mm": 22.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "169_68_180",
+          "coordinates": { "x": 169, "y": 68, "z": 180 },
+          "diameter_mm": 2.6,
+          "distance_from_branch_mm": 33.5,
+          "warning_reason": []
+        },
+        {
+          "node_id": "172_65_185",
+          "coordinates": { "x": 172, "y": 65, "z": 185 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 44.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_65_190",
+          "coordinates": { "x": 175, "y": 65, "z": 190 },
+          "diameter_mm": 1.4,
+          "distance_from_branch_mm": 55.9,
+          "warning_reason": []
+        }
+      ]
+    },
+    {
+      "branch_id": "R4",
+      "vessel_classification": 1,
+      "side": "right",
+      "order": 0,
+      "is_aorta": false,
+      "length": 40.0,
+      "depth": 1,
+      "start_point": "160_78_150",
+      "end_point": "175_90_190",
+      "parent_branch_id": "A1",
+      "parent_branch_node_id": "160_78_150",
+      "children_branch_ids": [],
+      "children_branch_node_ids": [],
+      "nodes": [
+        {
+          "node_id": "160_78_150",
+          "coordinates": { "x": 160, "y": 78, "z": 150 },
+          "diameter_mm": 6.2,
+          "distance_from_branch_mm": 0.0,
+          "warning_reason": []
+        },
+        {
+          "node_id": "163_82_160",
+          "coordinates": { "x": 163, "y": 82, "z": 160 },
+          "diameter_mm": 5.0,
+          "distance_from_branch_mm": 11.2,
+          "warning_reason": []
+        },
+        {
+          "node_id": "166_85_170",
+          "coordinates": { "x": 166, "y": 85, "z": 170 },
+          "diameter_mm": 3.8,
+          "distance_from_branch_mm": 22.4,
+          "warning_reason": []
+        },
+        {
+          "node_id": "169_87_180",
+          "coordinates": { "x": 169, "y": 87, "z": 180 },
+          "diameter_mm": 2.6,
+          "distance_from_branch_mm": 33.5,
+          "warning_reason": []
+        },
+        {
+          "node_id": "172_89_185",
+          "coordinates": { "x": 172, "y": 89, "z": 185 },
+          "diameter_mm": 1.8,
+          "distance_from_branch_mm": 44.7,
+          "warning_reason": []
+        },
+        {
+          "node_id": "175_90_190",
+          "coordinates": { "x": 175, "y": 90, "z": 190 },
+          "diameter_mm": 1.4,
+          "distance_from_branch_mm": 55.9,
+          "warning_reason": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "metadata": {
+    "case_name": "그룹 기반 구조",
+    "description": "혈관을 그룹별로 분류하여 관리하는 구조",
+    "total_groups": 4,
+    "total_vessels": 7,
+    "total_procedures": 5
+  },
+  "vessel_groups": [
+    {
+      "group_id": "group_main",
+      "group_name": "주동맥 그룹",
+      "group_type": "main_artery",
+      "priority": 1,
+      "vessels": [
+        {
+          "vessel_id": "vessel_001",
+          "segment_name": "주동맥",
+          "coordinates": [
+            { "x": 0, "y": 0, "z": 0, "diameter": 40 },
+            { "x": 0, "y": 50, "z": 0, "diameter": 38 },
+            { "x": 0, "y": 100, "z": 0, "diameter": 36 },
+            { "x": 0, "y": 150, "z": 0, "diameter": 34 },
+            { "x": 0, "y": 200, "z": 0, "diameter": 32 },
+            { "x": 0, "y": 250, "z": 0, "diameter": 30 },
+            { "x": 0, "y": 300, "z": 0, "diameter": 28 }
+          ],
+          "side": "center",
+          "is_critical_path": true
+        }
+      ]
+    },
+    {
+      "group_id": "group_primary",
+      "group_name": "1차 분지 그룹",
+      "group_type": "primary_branch",
+      "priority": 2,
+      "parent_group": "group_main",
+      "branch_point": { "vessel_id": "vessel_001", "coordinate_index": 3 },
+      "vessels": [
+        {
+          "vessel_id": "vessel_002",
+          "segment_name": "1차 주분지",
+          "coordinates": [
+            { "x": 0, "y": 150, "z": 0, "diameter": 30 },
+            { "x": 50, "y": 150, "z": 0, "diameter": 28 },
+            { "x": 100, "y": 150, "z": 0, "diameter": 26 },
+            { "x": 150, "y": 150, "z": 0, "diameter": 24 },
+            { "x": 200, "y": 150, "z": 0, "diameter": 22 }
+          ],
+          "side": "center",
+          "is_critical_path": true
+        }
+      ]
+    },
+    {
+      "group_id": "group_secondary",
+      "group_name": "2차 분지 그룹",
+      "group_type": "secondary_branch",
+      "priority": 3,
+      "parent_group": "group_primary",
+      "branch_point": { "vessel_id": "vessel_002", "coordinate_index": 2 },
+      "vessels": [
+        {
+          "vessel_id": "vessel_003",
+          "segment_name": "2차 상측분지",
+          "coordinates": [
+            { "x": 100, "y": 150, "z": 0, "diameter": 20 },
+            { "x": 135, "y": 125, "z": 0, "diameter": 18 },
+            { "x": 170, "y": 100, "z": 0, "diameter": 16 },
+            { "x": 205, "y": 75, "z": 0, "diameter": 14 }
+          ],
+          "side": "center",
+          "is_critical_path": true
+        },
+        {
+          "vessel_id": "vessel_004",
+          "segment_name": "2차 하측분지",
+          "coordinates": [
+            { "x": 100, "y": 150, "z": 0, "diameter": 15 },
+            { "x": 125, "y": 175, "z": 0, "diameter": 13 },
+            { "x": 150, "y": 200, "z": 0, "diameter": 11 }
+          ],
+          "side": "center",
+          "is_critical_path": false
+        }
+      ]
+    },
+    {
+      "group_id": "group_tertiary",
+      "group_name": "3차 분지 그룹",
+      "group_type": "tertiary_branch",
+      "priority": 4,
+      "parent_group": "group_secondary",
+      "branch_point": { "vessel_id": "vessel_002", "coordinate_index": 4 },
+      "vessels": [
+        {
+          "vessel_id": "vessel_005",
+          "segment_name": "3차 직진분지",
+          "coordinates": [
+            { "x": 200, "y": 150, "z": 0, "diameter": 18 },
+            { "x": 240, "y": 150, "z": 0, "diameter": 16 },
+            { "x": 280, "y": 150, "z": 0, "diameter": 14 },
+            { "x": 320, "y": 150, "z": 0, "diameter": 12 }
+          ],
+          "side": "center",
+          "is_critical_path": true
+        },
+        {
+          "vessel_id": "vessel_006",
+          "segment_name": "3차 상측세분지",
+          "coordinates": [
+            { "x": 205, "y": 75, "z": 0, "diameter": 12 },
+            { "x": 225, "y": 55, "z": 0, "diameter": 10 },
+            { "x": 245, "y": 35, "z": 0, "diameter": 8 }
+          ],
+          "side": "center",
+          "is_critical_path": false
+        }
+      ]
+    }
+  ],
+  "procedures": [
+    {
+      "procedure_id": "proc_001",
+      "procedure_number": 1,
+      "target_group": "group_primary",
+      "target_vessel": "vessel_002",
+      "coordinate_index": 3,
+      "interpolated_position": 0.2,
+      "description": "1차 분지 중간부 시술"
+    },
+    {
+      "procedure_id": "proc_002",
+      "procedure_number": 2,
+      "target_group": "group_secondary",
+      "target_vessel": "vessel_003",
+      "coordinate_index": 2,
+      "interpolated_position": 0.8,
+      "description": "2차 상측분지 시술"
+    },
+    {
+      "procedure_id": "proc_003",
+      "procedure_number": 3,
+      "target_group": "group_secondary",
+      "target_vessel": "vessel_003",
+      "coordinate_index": 1,
+      "interpolated_position": 0.3,
+      "description": "2차 상측분지 근위부 시술"
+    },
+    {
+      "procedure_id": "proc_004",
+      "procedure_number": 4,
+      "target_group": "group_tertiary",
+      "target_vessel": "vessel_005",
+      "coordinate_index": 2,
+      "interpolated_position": 0.0,
+      "description": "3차 직진분지 시술"
+    },
+    {
+      "procedure_id": "proc_005",
+      "procedure_number": 5,
+      "target_group": "group_tertiary",
+      "target_vessel": "vessel_006",
+      "coordinate_index": 1,
+      "interpolated_position": 0.5,
+      "description": "3차 세분지 시술"
+    }
+  ]
+}

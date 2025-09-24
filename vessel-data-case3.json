@@ -1,0 +1,196 @@
+{
+  "metadata": {
+    "case_name": "경로 기반 구조",
+    "description": "시술부위까지의 경로를 중심으로 한 구조",
+    "total_paths": 3,
+    "total_procedures": 5,
+    "diagram_type": "procedure_focused"
+  },
+  "vessel_paths": [
+    {
+      "path_id": "path_001",
+      "path_name": "주경로 (Main Path)",
+      "path_type": "critical",
+      "procedures_count": 3,
+      "segments": [
+        {
+          "segment_id": "seg_001",
+          "segment_name": "주동맥",
+          "segment_order": 1,
+          "start_node": { "x": 0, "y": 0, "z": 0 },
+          "end_node": { "x": 0, "y": 150, "z": 0 },
+          "control_points": [
+            { "x": 0, "y": 50, "z": 0, "diameter": 38 },
+            { "x": 0, "y": 100, "z": 0, "diameter": 36 }
+          ],
+          "diameter_start": 40,
+          "diameter_end": 34,
+          "length": 150,
+          "direction": "vertical"
+        },
+        {
+          "segment_id": "seg_002",
+          "segment_name": "1차 분지",
+          "segment_order": 2,
+          "start_node": { "x": 0, "y": 150, "z": 0 },
+          "end_node": { "x": 200, "y": 150, "z": 0 },
+          "control_points": [
+            { "x": 50, "y": 150, "z": 0, "diameter": 28 },
+            { "x": 100, "y": 150, "z": 0, "diameter": 26 },
+            { "x": 150, "y": 150, "z": 0, "diameter": 24 }
+          ],
+          "diameter_start": 30,
+          "diameter_end": 22,
+          "length": 200,
+          "direction": "horizontal",
+          "branch_point": {
+            "parent_segment": "seg_001",
+            "branch_distance": 150
+          }
+        }
+      ],
+      "procedures": [
+        {
+          "procedure_number": 1,
+          "target_segment": "seg_002",
+          "position_in_segment": 160,
+          "absolute_position": { "x": 160, "y": 150, "z": 0 },
+          "procedure_type": "stent"
+        }
+      ]
+    },
+    {
+      "path_id": "path_002",
+      "path_name": "상측 분지 경로 (Upper Branch Path)",
+      "path_type": "secondary",
+      "procedures_count": 2,
+      "segments": [
+        {
+          "segment_id": "seg_001",
+          "segment_name": "주동맥 (공통부)",
+          "segment_order": 1,
+          "start_node": { "x": 0, "y": 0, "z": 0 },
+          "end_node": { "x": 0, "y": 150, "z": 0 },
+          "is_shared": true,
+          "shared_with": ["path_001", "path_003"]
+        },
+        {
+          "segment_id": "seg_002",
+          "segment_name": "1차 분지 (공통부)",
+          "segment_order": 2,
+          "start_node": { "x": 0, "y": 150, "z": 0 },
+          "end_node": { "x": 100, "y": 150, "z": 0 },
+          "is_shared": true,
+          "shared_with": ["path_001"]
+        },
+        {
+          "segment_id": "seg_003",
+          "segment_name": "2차 상측분지",
+          "segment_order": 3,
+          "start_node": { "x": 100, "y": 150, "z": 0 },
+          "end_node": { "x": 250, "y": 75, "z": 0 },
+          "control_points": [
+            { "x": 135, "y": 125, "z": 0, "diameter": 18 },
+            { "x": 170, "y": 100, "z": 0, "diameter": 16 },
+            { "x": 205, "y": 85, "z": 0, "diameter": 14 }
+          ],
+          "diameter_start": 20,
+          "diameter_end": 12,
+          "length": 150,
+          "direction": "diagonal_up",
+          "branch_point": {
+            "parent_segment": "seg_002",
+            "branch_distance": 100
+          }
+        }
+      ],
+      "procedures": [
+        {
+          "procedure_number": 2,
+          "target_segment": "seg_003",
+          "position_in_segment": 100,
+          "absolute_position": { "x": 185, "y": 92, "z": 0 },
+          "procedure_type": "balloon"
+        },
+        {
+          "procedure_number": 3,
+          "target_segment": "seg_003",
+          "position_in_segment": 40,
+          "absolute_position": { "x": 128, "y": 132, "z": 0 },
+          "procedure_type": "stent"
+        }
+      ]
+    },
+    {
+      "path_id": "path_003",
+      "path_name": "직진 연장 경로 (Straight Extension Path)",
+      "path_type": "extension",
+      "procedures_count": 2,
+      "segments": [
+        {
+          "segment_id": "seg_001",
+          "segment_name": "주동맥 (공통부)",
+          "segment_order": 1,
+          "start_node": { "x": 0, "y": 0, "z": 0 },
+          "end_node": { "x": 0, "y": 150, "z": 0 },
+          "is_shared": true,
+          "shared_with": ["path_001", "path_002"]
+        },
+        {
+          "segment_id": "seg_002",
+          "segment_name": "1차 분지 (전체)",
+          "segment_order": 2,
+          "start_node": { "x": 0, "y": 150, "z": 0 },
+          "end_node": { "x": 200, "y": 150, "z": 0 },
+          "is_shared": true,
+          "shared_with": ["path_001"]
+        },
+        {
+          "segment_id": "seg_004",
+          "segment_name": "3차 직진분지",
+          "segment_order": 3,
+          "start_node": { "x": 200, "y": 150, "z": 0 },
+          "end_node": { "x": 320, "y": 150, "z": 0 },
+          "control_points": [
+            { "x": 240, "y": 150, "z": 0, "diameter": 16 },
+            { "x": 280, "y": 150, "z": 0, "diameter": 14 }
+          ],
+          "diameter_start": 18,
+          "diameter_end": 12,
+          "length": 120,
+          "direction": "horizontal",
+          "branch_point": {
+            "parent_segment": "seg_002",
+            "branch_distance": 200
+          }
+        }
+      ],
+      "procedures": [
+        {
+          "procedure_number": 4,
+          "target_segment": "seg_004",
+          "position_in_segment": 80,
+          "absolute_position": { "x": 280, "y": 150, "z": 0 },
+          "procedure_type": "stent"
+        },
+        {
+          "procedure_number": 5,
+          "target_segment": "seg_004",
+          "position_in_segment": 40,
+          "absolute_position": { "x": 240, "y": 150, "z": 0 },
+          "procedure_type": "balloon"
+        }
+      ]
+    }
+  ],
+  "rendering_config": {
+    "show_shared_segments_once": true,
+    "highlight_procedure_paths": true,
+    "branch_point_markers": true,
+    "path_colors": {
+      "path_001": "#FF6B6B",
+      "path_002": "#4ECDC4",
+      "path_003": "#45B7D1"
+    }
+  }
+}

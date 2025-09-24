@@ -1,0 +1,188 @@
+{
+  "metadata": {
+    "case_name": "계층형 브랜치 구조",
+    "description": "부모-자식 관계를 명확히 하는 트리 구조",
+    "total_branches": 8,
+    "total_procedures": 5
+  },
+  "main_artery": {
+    "branch_id": "main_001",
+    "name": "주동맥",
+    "start_point": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "length": 300,
+    "diameter": 40,
+    "angle": 90,
+    "is_main": true,
+    "side": "center"
+  },
+  "branches": [
+    {
+      "branch_id": "branch_001",
+      "name": "1차 분지",
+      "parent_id": "main_001",
+      "branch_point_distance": 150,
+      "start_point": {
+        "x": 0,
+        "y": 150,
+        "z": 0
+      },
+      "length": 200,
+      "diameter": 30,
+      "angle": 0,
+      "is_main": false,
+      "side": "center",
+      "branch_level": 1
+    },
+    {
+      "branch_id": "branch_002",
+      "name": "2-1차 분지 (상측)",
+      "parent_id": "branch_001",
+      "branch_point_distance": 100,
+      "start_point": {
+        "x": 100,
+        "y": 150,
+        "z": 0
+      },
+      "length": 150,
+      "diameter": 20,
+      "angle": -45,
+      "is_main": false,
+      "side": "center",
+      "branch_level": 2
+    },
+    {
+      "branch_id": "branch_003",
+      "name": "2-2차 분지 (하측)",
+      "parent_id": "branch_001",
+      "branch_point_distance": 100,
+      "start_point": {
+        "x": 100,
+        "y": 150,
+        "z": 0
+      },
+      "length": 80,
+      "diameter": 15,
+      "angle": 45,
+      "is_main": false,
+      "side": "center",
+      "branch_level": 2
+    },
+    {
+      "branch_id": "branch_004",
+      "name": "2-3차 분지 (직진)",
+      "parent_id": "branch_001",
+      "branch_point_distance": 200,
+      "start_point": {
+        "x": 200,
+        "y": 150,
+        "z": 0
+      },
+      "length": 120,
+      "diameter": 25,
+      "angle": 0,
+      "is_main": false,
+      "side": "center",
+      "branch_level": 2
+    },
+    {
+      "branch_id": "branch_005",
+      "name": "3-1차 분지",
+      "parent_id": "branch_002",
+      "branch_point_distance": 80,
+      "start_point": {
+        "x": 156,
+        "y": 94,
+        "z": 0
+      },
+      "length": 60,
+      "diameter": 12,
+      "angle": -30,
+      "is_main": false,
+      "side": "center",
+      "branch_level": 3
+    },
+    {
+      "branch_id": "branch_006",
+      "name": "3-2차 분지",
+      "parent_id": "branch_004",
+      "branch_point_distance": 60,
+      "start_point": {
+        "x": 260,
+        "y": 150,
+        "z": 0
+      },
+      "length": 80,
+      "diameter": 15,
+      "angle": 30,
+      "is_main": false,
+      "side": "center",
+      "branch_level": 3
+    }
+  ],
+  "procedures": [
+    {
+      "procedure_id": "proc_001",
+      "procedure_number": 1,
+      "target_branch_id": "branch_001",
+      "distance_from_start": 160,
+      "position": {
+        "x": 160,
+        "y": 150,
+        "z": 0
+      },
+      "description": "주요 분지 시술"
+    },
+    {
+      "procedure_id": "proc_002",
+      "procedure_number": 2,
+      "target_branch_id": "branch_002",
+      "distance_from_start": 100,
+      "position": {
+        "x": 227,
+        "y": 79,
+        "z": 0
+      },
+      "description": "상측 분지 시술"
+    },
+    {
+      "procedure_id": "proc_003",
+      "procedure_number": 3,
+      "target_branch_id": "branch_002",
+      "distance_from_start": 40,
+      "position": {
+        "x": 128,
+        "y": 122,
+        "z": 0
+      },
+      "description": "상측 분지 근위부 시술"
+    },
+    {
+      "procedure_id": "proc_004",
+      "procedure_number": 4,
+      "target_branch_id": "branch_004",
+      "distance_from_start": 80,
+      "position": {
+        "x": 280,
+        "y": 150,
+        "z": 0
+      },
+      "description": "직진 분지 시술"
+    },
+    {
+      "procedure_id": "proc_005",
+      "procedure_number": 5,
+      "target_branch_id": "branch_005",
+      "distance_from_start": 30,
+      "position": {
+        "x": 171,
+        "y": 79,
+        "z": 0
+      },
+      "description": "3차 분지 시술"
+    }
+  ]
+}

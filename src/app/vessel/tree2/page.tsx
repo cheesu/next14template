@@ -17,7 +17,7 @@ interface CutData {
   point: number; // 시작점으로부터 얼마나 떨어진 포인트에 그릴지
 }
 
-const VesselTreePage: React.FC = () => {
+const VesselTree2Page: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const defaultVessels: VesselData[] = [
@@ -533,7 +533,7 @@ const VesselTreePage: React.FC = () => {
     <div className="space-y-8">
       <div className="bg-white rounded-xl p-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          🩸 혈관 모형도
+          🩸 혈관 모형도2
         </h1>
         <p className="text-lg text-gray-600 mb-8">
           혈관의 구조와 절단 위치를 시각적으로 표현하고 분석할 수 있는
@@ -727,4 +727,4 @@ const VesselTreePage: React.FC = () => {
   );
 };
 
-export default VesselTreePage;
+export default VesselTree2Page;
